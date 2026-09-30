@@ -49,9 +49,6 @@ CarPlay Maps VC 是一个面向大众与斯柯达 MHI2 车机的免费开源项�
 - CarPlay 音乐信息或封面图像。
 - 导航文字、道路名称、转向提示或车道引导。
 - 仪表启动动画。
-- 设备绑定加密、K1/K2、密码或 <code>shadow</code> 修改。
-- NAVDB 文件创建、替换、改名、改日期或删除。
-- 250 ms 守护进程。
 
 ### 固定显示方案
 
@@ -221,9 +218,7 @@ The public release uses the validated V7.2.2 display/control behavior as a fixed
 - Music metadata or cover art.
 - Navigation text, road names, maneuver or lane guidance.
 - Startup animation.
-- Device-bound encryption, K1/K2, password or <code>shadow</code> changes.
-- NAVDB file creation, replacement, rename, timestamp change or deletion.
-- 250 ms watchdog.
+
 
 ### Display profiles
 
