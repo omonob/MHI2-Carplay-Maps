@@ -74,6 +74,18 @@ CarPlay Maps VC 是一个面向大众与斯柯达 MHI2 车机的免费开源项�
 
 所有文件均发布在 [GitHub Releases](https://github.com/omonob/MHI2-Carplay-Maps/releases/latest)。每个 ZIP 都包含**完整工具箱**，不是单独插件；解压后应直接得到 SD 卡根目录结构。
 
+如果你已经有自己的工具箱或需要手动集成，请直接使用仓库中的独立项目文件。它们按照固件和仪表分开存放，**不包含完整工具箱**：
+
+| 固件 / 仪表 | 独立文件目录 |
+| --- | --- |
+| MU1102 / 791 AID 12.3 | [`MU1102/791_AID12.3`](./MU1102/791_AID12.3/) |
+| MU1102 / 790 AID 10.5 | [`MU1102/790_AID10.5`](./MU1102/790_AID10.5/) |
+| MU1367 / 791 AID 12.3 | [`MU1367/791_AID12.3`](./MU1367/791_AID12.3/) |
+| MU1367 / 790 AID 10.5 | [`MU1367/790_AID10.5`](./MU1367/790_AID10.5/) |
+| MU1440 Škoda / 790 AID 10.5 | [`MU1440_SKODA/790_AID10.5`](./MU1440_SKODA/790_AID10.5/) |
+
+每个目录只带该组合所需的安装脚本、公共运行文件、专用 `core.so`、状态检查和原厂恢复脚本。普通用户请优先下载 Releases 中的完整工具箱。
+
 #### MQB Toolbox
 
 | 文件 | 用途 |
@@ -240,6 +252,18 @@ Unknown file sizes and unsupported cluster combinations stop before factory file
 ### Downloads
 
 Download complete, ready-to-extract toolbox distributions from [GitHub Releases](https://github.com/omonob/MHI2-Carplay-Maps/releases/latest). Extract each archive directly to the SD-card root.
+
+For manual integration into an existing toolbox, use the standalone project files stored directly in this repository. They are separated by firmware and cluster and **do not include a complete toolbox**:
+
+| Firmware / cluster | Standalone files |
+| --- | --- |
+| MU1102 / 791 AID 12.3 | [`MU1102/791_AID12.3`](./MU1102/791_AID12.3/) |
+| MU1102 / 790 AID 10.5 | [`MU1102/790_AID10.5`](./MU1102/790_AID10.5/) |
+| MU1367 / 791 AID 12.3 | [`MU1367/791_AID12.3`](./MU1367/791_AID12.3/) |
+| MU1367 / 790 AID 10.5 | [`MU1367/790_AID10.5`](./MU1367/790_AID10.5/) |
+| MU1440 Skoda / 790 AID 10.5 | [`MU1440_SKODA/790_AID10.5`](./MU1440_SKODA/790_AID10.5/) |
+
+Each directory contains only the matching installer, shared runtime files, profile-specific `core.so`, status script, and factory-restore script. Most users should download the full toolbox archives from Releases.
 
 - [Full MQB Toolbox V4.2A](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MQB_Toolbox_V4.2A.zip)
 - [Full M.I.B. 3.6.0 — MU1102 / 791](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1102_791.zip)

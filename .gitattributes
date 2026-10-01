@@ -1,0 +1,14 @@
+*.sh text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.jar binary
+*.so binary
+MU1102/**/payload/common/altscreen-most-bridge binary
+MU1102/**/payload/common/carplay-cluster-supervisor binary
+MU1102/**/payload/common/carplay-pairing-helper binary
+MU1367/**/payload/common/altscreen-most-bridge binary
+MU1367/**/payload/common/carplay-cluster-supervisor binary
+MU1367/**/payload/common/carplay-pairing-helper binary
+MU1440_SKODA/**/payload/common/altscreen-most-bridge binary
+MU1440_SKODA/**/payload/common/carplay-cluster-supervisor binary
+MU1440_SKODA/**/payload/common/carplay-pairing-helper binary
