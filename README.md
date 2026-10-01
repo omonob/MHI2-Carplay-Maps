@@ -24,7 +24,7 @@
 
 CarPlay Maps VC 是一个面向大众与斯柯达 MHI2 车机的免费开源项目。它把 CarPlay 的地图视频画面送到原厂液晶仪表，并提供方向盘地图控制。
 
-当前公开版本以经过验证的 V7.2.2 显示与控制逻辑为固定基线，提供两种完整工具箱：
+当前公开版本以经过验证的 V70 显示与控制逻辑为固定基线，提供两种完整工具箱：
 
 - **MQB Toolbox 交互安装版**：工具箱自动识别 MU 固件，用户只需选择仪表型号。
 - **M.I.B. Toolbox 自动安装版**：每个压缩包固定对应一个 MU 与仪表组合，插卡后通过 SWDL 自动执行。
@@ -54,14 +54,14 @@ CarPlay Maps VC 是一个面向大众与斯柯达 MHI2 车机的免费开源项�
 
 | 仪表 | 显示基线 | 方向盘控制 |
 | --- | --- | --- |
-| 791 AID 12.3 | 40 fps，导航居中 | 短按缩放，长按切换地图 |
-| 790 AID 10.5 | 40 fps，未导航居中、导航偏右 | 短按缩放，长按切换地图 |
+| 791 AID 12.3 | 30 fps，导航居中 | 短按缩放，长按切换地图 |
+| 790 AID 10.5 | 30 fps，未导航居中、导航偏右 | 短按缩放，长按切换地图 |
 
 ### 支持矩阵
 
 安装程序通过 <code>/ifs/lsd.jxe</code> 的精确文件大小识别固件。未知大小或不支持的仪表组合会在修改原厂文件前停止。
 
-| 固件 | lsd.jxe 大小 | 791 AID 12.3 | 790 AID 10.5 |
+| 固件 | lsd.jxe 大小 | 791/794 AID 12.3 | 790 AID 10.5 |
 | --- | ---: | :---: | :---: |
 | MU1102 | 55,915,411 bytes | ✅ | ✅ |
 | MU1367 | 55,840,541 bytes | ✅ | ✅ |
@@ -78,9 +78,9 @@ CarPlay Maps VC 是一个面向大众与斯柯达 MHI2 车机的免费开源项�
 
 | 固件 / 仪表 | 独立文件目录 |
 | --- | --- |
-| MU1102 / 791 AID 12.3 | [`MU1102/791_AID12.3`](./MU1102/791_AID12.3/) |
+| MU1102 / 791/794 AID 12.3 | [`MU1102/791_AID12.3`](./MU1102/791_AID12.3/) |
 | MU1102 / 790 AID 10.5 | [`MU1102/790_AID10.5`](./MU1102/790_AID10.5/) |
-| MU1367 / 791 AID 12.3 | [`MU1367/791_AID12.3`](./MU1367/791_AID12.3/) |
+| MU1367 / 791/794 AID 12.3 | [`MU1367/791_AID12.3`](./MU1367/791_AID12.3/) |
 | MU1367 / 790 AID 10.5 | [`MU1367/790_AID10.5`](./MU1367/790_AID10.5/) |
 | MU1440 Škoda / 790 AID 10.5 | [`MU1440_SKODA/790_AID10.5`](./MU1440_SKODA/790_AID10.5/) |
 
@@ -96,9 +96,9 @@ CarPlay Maps VC 是一个面向大众与斯柯达 MHI2 车机的免费开源项�
 
 | 文件 | 固件 / 仪表 |
 | --- | --- |
-| [MU1102 / 791](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1102_791.zip) | MU1102 + 791 AID 12.3 |
+| [MU1102 / 791/794](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1102_791.zip) | MU1102 + 791/794 AID 12.3 |
 | [MU1102 / 790](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1102_790.zip) | MU1102 + 790 AID 10.5 |
-| [MU1367 / 791](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1367_791.zip) | MU1367 + 791 AID 12.3 |
+| [MU1367 / 791/794](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1367_791.zip) | MU1367 + 791/794 AID 12.3 |
 | [MU1367 / 790](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1367_790.zip) | MU1367 + 790 AID 10.5 |
 | [MU1440 / 790 Škoda](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1440_790_SKODA.zip) | MU1440 Škoda + 790 AID 10.5 |
 
@@ -210,7 +210,7 @@ MQB 菜单还提供：
 
 CarPlay Maps VC is a free and open-source community project for Volkswagen and Skoda MHI2 systems. It sends the CarPlay map video to the factory virtual cockpit and adds steering-wheel map controls.
 
-The public release uses the validated V7.2.2 display/control behavior as a fixed baseline and provides two complete installation routes:
+The public release uses the validated V70 display/control behavior as a fixed baseline and provides two complete installation routes:
 
 - **MQB Toolbox interactive package**: detects the MU firmware automatically; the user selects the cluster type.
 - **M.I.B. Toolbox automatic package**: each archive is locked to one MU/cluster profile and runs through the SWDL workflow.
@@ -236,12 +236,12 @@ The public release uses the validated V7.2.2 display/control behavior as a fixed
 
 | Cluster | Fixed display behavior | Steering-wheel control |
 | --- | --- | --- |
-| 791 AID 12.3 | 40 fps, navigation centered | Short press zoom; long press map switch |
-| 790 AID 10.5 | 40 fps, non-navigation centered, navigation right | Short press zoom; long press map switch |
+| 791/794 AID 12.3 | 30 fps, navigation centered | Short press zoom; long press map switch |
+| 790 AID 10.5 | 30 fps, non-navigation centered, navigation right | Short press zoom; long press map switch |
 
 ### Compatibility
 
-| Firmware | Exact lsd.jxe size | 791 AID 12.3 | 790 AID 10.5 |
+| Firmware | Exact lsd.jxe size | 791/794 AID 12.3 | 790 AID 10.5 |
 | --- | ---: | :---: | :---: |
 | MU1102 | 55,915,411 bytes | ✅ | ✅ |
 | MU1367 | 55,840,541 bytes | ✅ | ✅ |
@@ -257,18 +257,18 @@ For manual integration into an existing toolbox, use the standalone project file
 
 | Firmware / cluster | Standalone files |
 | --- | --- |
-| MU1102 / 791 AID 12.3 | [`MU1102/791_AID12.3`](./MU1102/791_AID12.3/) |
+| MU1102 / 791/794 AID 12.3 | [`MU1102/791_AID12.3`](./MU1102/791_AID12.3/) |
 | MU1102 / 790 AID 10.5 | [`MU1102/790_AID10.5`](./MU1102/790_AID10.5/) |
-| MU1367 / 791 AID 12.3 | [`MU1367/791_AID12.3`](./MU1367/791_AID12.3/) |
+| MU1367 / 791/794 AID 12.3 | [`MU1367/791_AID12.3`](./MU1367/791_AID12.3/) |
 | MU1367 / 790 AID 10.5 | [`MU1367/790_AID10.5`](./MU1367/790_AID10.5/) |
 | MU1440 Skoda / 790 AID 10.5 | [`MU1440_SKODA/790_AID10.5`](./MU1440_SKODA/790_AID10.5/) |
 
 Each directory contains only the matching installer, shared runtime files, profile-specific `core.so`, status script, and factory-restore script. Most users should download the full toolbox archives from Releases.
 
 - [Full MQB Toolbox V4.2A](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MQB_Toolbox_V4.2A.zip)
-- [Full M.I.B. 3.6.0 — MU1102 / 791](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1102_791.zip)
+- [Full M.I.B. 3.6.0 — MU1102 / 791/794](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1102_791.zip)
 - [Full M.I.B. 3.6.0 — MU1102 / 790](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1102_790.zip)
-- [Full M.I.B. 3.6.0 — MU1367 / 791](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1367_791.zip)
+- [Full M.I.B. 3.6.0 — MU1367 / 791/794](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1367_791.zip)
 - [Full M.I.B. 3.6.0 — MU1367 / 790](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1367_790.zip)
 - [Full M.I.B. 3.6.0 — MU1440 / 790 Skoda](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1440_790_SKODA.zip)
 - [SHA-256 manifest](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/FULL_TOOLBOX_SHA256.txt)
