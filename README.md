@@ -122,11 +122,12 @@ PowerShell 校验示例：
 
 付费选项包含：
 
-1. CarPlay 导航信息映射到仪表。
-2. CarPlay 歌曲信息映射到仪表。
-3. 791/794 仪表流畅度优化。
-4. 790 仪表导航居中优化。
-5. 原车无线 CarPlay 的后续研究与可能支持；该功能仍在评估中，不代表当前已经可用，也不承诺固定交付时间。
+1. 大众、斯柯达全部车型专属启动 Logo 定制。
+2. CarPlay 导航信息映射到仪表。
+3. CarPlay 歌曲信息映射到仪表。
+4. 791/794 仪表流畅度优化。
+5. 790 仪表导航居中优化。
+6. 原车无线 CarPlay 的后续研究与可能支持；该功能仍在评估中，不代表当前已经可用，也不承诺固定交付时间。
 
 > [!NOTE]
 > 付费选项是与本仓库开源内容分开的扩展功能和技术服务，并不是开源软件的授权费。购买前请通过商品页面确认自己的固件、仪表以及具体支持范围。
@@ -310,11 +311,12 @@ Users who want additional functions or wish to support continued development may
 
 The paid option includes:
 
-1. CarPlay navigation information mapped to the instrument cluster.
-2. CarPlay music information mapped to the instrument cluster.
-3. Smoothness optimization for 791/794 clusters.
-4. Navigation-centering optimization for the 790 cluster.
-5. Ongoing research and possible future support for factory wireless CarPlay. This feature is still under evaluation, is not currently guaranteed to be available, and has no fixed delivery date.
+1. Exclusive model-specific startup logo customization for all Volkswagen and Skoda vehicle models.
+2. CarPlay navigation information mapped to the instrument cluster.
+3. CarPlay music information mapped to the instrument cluster.
+4. Smoothness optimization for 791/794 clusters.
+5. Navigation-centering optimization for the 790 cluster.
+6. Ongoing research and possible future support for factory wireless CarPlay. This feature is still under evaluation, is not currently guaranteed to be available, and has no fixed delivery date.
 
 > [!NOTE]
 > This is a separate feature and technical-support service, not a license fee for the open-source software. Confirm the exact firmware, cluster and supported scope on the product page before purchasing.
