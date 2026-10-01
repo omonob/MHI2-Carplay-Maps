@@ -12,7 +12,7 @@
 
 [中文说明](#中文说明) · [English](#english) · [下载 Downloads](https://github.com/omonob/MHI2-Carplay-Maps/releases/latest)
 
-**作者 / Author: [omonob (QCDWJ)](https://github.com/omonob)**
+**作者 / Author: [omonob (汽车大玩家)](https://github.com/omonob)**
 
 </div>
 
