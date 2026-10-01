@@ -302,6 +302,10 @@ The open-source CarPlay Maps VC map-video and steering-control portion in this r
 
 Users who want additional functions or wish to support continued development may choose a separate paid service: **¥399 RMB (approximately US$60)**. The USD figure is an estimate based on the [ECB reference rates for 30 September 2026](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html); the actual converted amount may vary.
 
+<p align="center">
+  <a href="https://www.goofish.com/item?id=1076254792602"><img src="./assets/optional-paid-support-goofish.png" alt="CarPlay Maps VC optional paid support" width="620"></a>
+</p>
+
 [**View the optional paid service on Goofish**](https://www.goofish.com/item?id=1076254792602)
 
 The paid option includes:
