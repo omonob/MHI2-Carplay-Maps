@@ -108,6 +108,29 @@ PowerShell 校验示例：
 
     Get-FileHash .\CarPlay_Maps_VC_FULL_MQB_Toolbox_V4.2A.zip -Algorithm SHA256
 
+### 可选付费支持
+
+本仓库公开的 CarPlay Maps VC 地图投屏与方向盘控制部分**永久免费**，作者不会把开源包作为收费产品销售。下载、使用以及 GPLv3 赋予的权利均不要求购买付费选项。
+
+如果你需要额外功能或希望支持作者继续开发，可以选择独立的付费服务：**¥399 RMB（约 US$60）**。美元金额按[欧洲央行 2026-09-30 参考汇率](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html)估算，实际支付金额会随汇率变化。
+
+<p align="center">
+  <a href="https://www.goofish.com/item?id=1076254792602"><img src="./assets/optional-paid-support-goofish.png" alt="CarPlay Maps VC optional paid support" width="620"></a>
+</p>
+
+<p align="center"><strong><a href="https://www.goofish.com/item?id=1076254792602">查看闲鱼付费选项 / Open the paid option on Goofish</a></strong></p>
+
+付费选项包含：
+
+1. CarPlay 导航信息映射到仪表。
+2. CarPlay 歌曲信息映射到仪表。
+3. 791/794 仪表流畅度优化。
+4. 790 仪表导航居中优化。
+5. 原车无线 CarPlay 的后续研究与可能支持；该功能仍在评估中，不代表当前已经可用，也不承诺固定交付时间。
+
+> [!NOTE]
+> 付费选项是与本仓库开源内容分开的扩展功能和技术服务，并不是开源软件的授权费。购买前请通过商品页面确认自己的固件、仪表以及具体支持范围。
+
 ### 两种安装方法
 
 | 项目 | MQB Toolbox | M.I.B. Toolbox |
@@ -272,6 +295,25 @@ Each directory contains only the matching installer, shared runtime files, profi
 - [Full M.I.B. 3.6.0 — MU1367 / 790](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1367_790.zip)
 - [Full M.I.B. 3.6.0 — MU1440 / 790 Skoda](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1440_790_SKODA.zip)
 - [SHA-256 manifest](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.0.0/FULL_TOOLBOX_SHA256.txt)
+
+### Optional paid support
+
+The open-source CarPlay Maps VC map-video and steering-control portion in this repository remains **free of charge**. The author does not sell the open-source package as a paid product, and downloading, using, or exercising the rights granted by GPLv3 does not require a purchase.
+
+Users who want additional functions or wish to support continued development may choose a separate paid service: **¥399 RMB (approximately US$60)**. The USD figure is an estimate based on the [ECB reference rates for 30 September 2026](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html); the actual converted amount may vary.
+
+[**View the optional paid service on Goofish**](https://www.goofish.com/item?id=1076254792602)
+
+The paid option includes:
+
+1. CarPlay navigation information mapped to the instrument cluster.
+2. CarPlay music information mapped to the instrument cluster.
+3. Smoothness optimization for 791/794 clusters.
+4. Navigation-centering optimization for the 790 cluster.
+5. Ongoing research and possible future support for factory wireless CarPlay. This feature is still under evaluation, is not currently guaranteed to be available, and has no fixed delivery date.
+
+> [!NOTE]
+> This is a separate feature and technical-support service, not a license fee for the open-source software. Confirm the exact firmware, cluster and supported scope on the product page before purchasing.
 
 ### Installation route A: MQB Toolbox
 
