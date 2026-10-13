@@ -20,6 +20,15 @@
 
 ## 中文说明
 
+### v1.1.0 更新
+
+本次只更新以下两项，其余显示参数、支持矩阵、安装入口及付费说明保持不变。
+
+1. **自动补装 navigation 导航补丁**：安装时检查启动加载配置和导航补丁类。未安装时自动补装，解决 CarPlay 开始导航后提示“已在移动设备中激活”并关闭仪表地图的问题；已有完整补丁会保留，不覆盖原有信息映射 JAR。原厂 `lsd.sh` 无补丁加载行时也可安装。这是地图共存补丁，不是导航文字或音乐信息映射功能。
+2. **MU1440 Škoda 滑轮缩放**：上拨放大、下拨缩小；滑轮按压不映射。仅更新 MU1440 的控制 JAR，大众按键逻辑不变。缩放需要手机地图 App 支持，高德地图已验证可用，百度地图不支持该缩放操作。
+
+[下载 v1.1.0 完整工具箱与校验文件](https://github.com/omonob/MHI2-Carplay-Maps/releases/tag/toolbox-plaintext-v1.1.0) · [更新说明](./releases/toolbox-plaintext-v1.1.0.md)
+
 ### 项目简介
 
 CarPlay Maps VC 是一个面向大众与斯柯达 MHI2 车机的免费开源项目。它把 CarPlay 的地图视频画面送到原厂液晶仪表，并提供方向盘地图控制。
@@ -229,6 +238,15 @@ MQB 菜单还提供：
 ---
 
 ## English
+
+### v1.1.0 update
+
+Only the following two changes are included. Display parameters, compatibility, installation entry points and paid-support information remain unchanged.
+
+1. **Automatic navigation prerequisite patch**: the installer checks the boot configuration and navigation patch classes. If missing, it installs the patch that prevents CarPlay navigation from reporting “activated on the mobile device” and closing the cluster map. An existing complete patch is retained, including a merged metadata JAR. Unpatched factory `lsd.sh` files are now supported. This enables map coexistence; it does not add navigation-text or music metadata mapping.
+2. **MU1440 Skoda roller zoom**: roll up to zoom in and down to zoom out; pressing the roller is not mapped. Only the MU1440 control JAR changes; Volkswagen button behavior stays the same. The phone map app must support zoom commands: Amap was verified, while Baidu Maps does not support this operation.
+
+[Download v1.1.0 full toolboxes and checksums](https://github.com/omonob/MHI2-Carplay-Maps/releases/tag/toolbox-plaintext-v1.1.0) · [Release notes](./releases/toolbox-plaintext-v1.1.0.md)
 
 ### Overview
 
