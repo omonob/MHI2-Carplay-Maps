@@ -1,4 +1,4 @@
-"""Verify that the update changes only navigation install and MU1440 controls."""
+"""Verify that the update changes only navigation install, MU1440 controls and MU1427 support."""
 import argparse
 import hashlib
 from pathlib import Path
@@ -29,6 +29,14 @@ def main():
                 "Toolbox/scripts/cpmap_restore_core.sh",
                 "Custom/carplay_maps_vc/payload/common/CarPlayNavigationPatch.jar",
                 "Custom/carplay_maps_vc/payload/profiles/MU1440/790/CarPlayClusterControls.jar",
+                "Custom/carplay_maps_vc/payload/profiles/MU1427/791/core.so",
+                "Custom/carplay_maps_vc/payload/profiles/MU1427/791/CarPlayNavigationPatch.jar",
+                "Modifications/Lsd/MU1427/NavActiveIgnore.jar",
+                "Toolbox/scripts/cpmap_common.sh",
+                "Toolbox/scripts/cpmap_install_791.sh",
+                "Toolbox/scripts/cpmap_install_790.sh",
+                "Toolbox/scripts/install_nav_active_ignore.sh",
+                "Toolbox/scripts/uninstall_nav_active_ignore.sh",
             }
         else:
             mu = "MU1440" if name.startswith("SKODA") else ("MU1367" if "MU1367" in name else "MU1102")

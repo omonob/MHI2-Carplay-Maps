@@ -8,7 +8,7 @@
 [![Release](https://img.shields.io/github/v/release/omonob/MHI2-Carplay-Maps?display_name=tag&style=flat-square)](https://github.com/omonob/MHI2-Carplay-Maps/releases/latest)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-MHI2%20%2F%20QNX%206.5-2f6f9f?style=flat-square)
-![Profiles](https://img.shields.io/badge/profiles-MU1102%20%7C%20MU1367%20%7C%20MU1440-green?style=flat-square)
+![Profiles](https://img.shields.io/badge/profiles-MU1102%20%7C%20MU1367%20%7C%20MU1427%20%7C%20MU1440-green?style=flat-square)
 
 [中文说明](#中文说明) · [English](#english) · [下载 Downloads](https://github.com/omonob/MHI2-Carplay-Maps/releases/latest)
 
@@ -56,7 +56,7 @@ CarPlay Maps VC 是一个面向大众与斯柯达 MHI2 车机的免费开源项�
 - CarPlay 地图视频投屏到原厂液晶仪表。
 - 方向盘短按：地图放大或缩小。
 - 方向盘长按：切换地图视图。
-- 按固件精确识别 MU1102、MU1367 与 MU1440。
+- 按固件精确识别 MU1102、MU1367、MU1427 与 MU1440。
 - 安装前保存可恢复的原厂 <code>dio_manager</code>、<code>lsd.sh</code> 与相关 JAR 状态。
 - 支持状态检查、重复安装和恢复原厂文件。
 - 运行文件以明文形式放在 <code>/mnt/app/carplaymaps</code>。
@@ -82,7 +82,11 @@ CarPlay Maps VC 是一个面向大众与斯柯达 MHI2 车机的免费开源项�
 | --- | ---: | :---: | :---: |
 | MU1102 | 55,915,411 bytes | ✅ | ✅ |
 | MU1367 | 55,840,541 bytes | ✅ | ✅ |
+| MU1427 | 52,751,492 bytes | ✅（MQB Toolbox / 独立文件） | ❌ |
 | MU1440 Škoda | 55,840,933 bytes | ❌ | ✅ |
+
+> [!NOTE]
+> MU1427（AirPlay 210.81）使用专用 `core.so` 与专用 navigation 导航补丁，详见 [`MU1427/README.md`](./MU1427/README.md)。工具箱原有的通用 `NavActiveIgnore.jar` 在 MU1427 上会导致 CarPlay 无法启动，安装程序检测到时会停止。
 
 > [!WARNING]
 > MU1440 仅支持 Škoda 790 仪表包。不要混用不同固件或不同仪表的 M.I.B. 压缩包。
@@ -99,6 +103,7 @@ CarPlay Maps VC 是一个面向大众与斯柯达 MHI2 车机的免费开源项�
 | MU1102 / 790 AID 10.5 | [`MU1102/790_AID10.5`](./MU1102/790_AID10.5/) |
 | MU1367 / 791/794 AID 12.3 | [`MU1367/791_AID12.3`](./MU1367/791_AID12.3/) |
 | MU1367 / 790 AID 10.5 | [`MU1367/790_AID10.5`](./MU1367/790_AID10.5/) |
+| MU1427 / 791/794 AID 12.3 | [`MU1427/791_AID12.3`](./MU1427/791_AID12.3/) |
 | MU1440 Škoda / 790 AID 10.5 | [`MU1440_SKODA/790_AID10.5`](./MU1440_SKODA/790_AID10.5/) |
 
 每个目录只带该组合所需的安装脚本、公共运行文件、专用 `core.so`、状态检查和原厂恢复脚本。普通用户请优先下载 Releases 中的完整工具箱。
@@ -278,7 +283,7 @@ The public release uses the validated V70 display/control baseline, adds the 791
 - CarPlay map video on the factory virtual cockpit.
 - Short steering-wheel press for map zoom in/out.
 - Long steering-wheel press for map-view switching.
-- Exact MU1102, MU1367 and MU1440 firmware gates.
+- Exact MU1102, MU1367, MU1427 and MU1440 firmware gates.
 - Factory-file rollback evidence captured during installation.
 - Status, repeat-install and factory-restore paths.
 - Plaintext runtime under <code>/mnt/app/carplaymaps</code>.
@@ -303,7 +308,10 @@ The public release uses the validated V70 display/control baseline, adds the 791
 | --- | ---: | :---: | :---: |
 | MU1102 | 55,915,411 bytes | ✅ | ✅ |
 | MU1367 | 55,840,541 bytes | ✅ | ✅ |
+| MU1427 | 52,751,492 bytes | ✅ (MQB Toolbox / standalone) | ❌ |
 | MU1440 Skoda | 55,840,933 bytes | ❌ | ✅ |
+
+MU1427 (AirPlay 210.81) uses its own `core.so` and its own navigation prerequisite patch; see [`MU1427/README.md`](./MU1427/README.md). The toolbox's generic `NavActiveIgnore.jar` stops CarPlay from starting on MU1427, and the installer refuses to continue if it finds it active.
 
 Unknown file sizes and unsupported cluster combinations stop before factory files are changed.
 
@@ -319,6 +327,7 @@ For manual integration into an existing toolbox, use the standalone project file
 | MU1102 / 790 AID 10.5 | [`MU1102/790_AID10.5`](./MU1102/790_AID10.5/) |
 | MU1367 / 791/794 AID 12.3 | [`MU1367/791_AID12.3`](./MU1367/791_AID12.3/) |
 | MU1367 / 790 AID 10.5 | [`MU1367/790_AID10.5`](./MU1367/790_AID10.5/) |
+| MU1427 / 791/794 AID 12.3 | [`MU1427/791_AID12.3`](./MU1427/791_AID12.3/) |
 | MU1440 Skoda / 790 AID 10.5 | [`MU1440_SKODA/790_AID10.5`](./MU1440_SKODA/790_AID10.5/) |
 
 Each directory contains only the matching installer, shared runtime files, profile-specific `core.so`, status script, and factory-restore script. Most users should download the full toolbox archives from Releases.

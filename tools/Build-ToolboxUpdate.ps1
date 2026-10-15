@@ -58,6 +58,15 @@ $mqbPayload = "$mqb\Custom\carplay_maps_vc\payload"
 Update-Payload "$repo\MU1102\791_AID12.3" $mqbPayload $false
 Copy-File "$repo\MU1440_SKODA\790_AID10.5\payload\common\CarPlayClusterControls.jar" "$mqbPayload\profiles\MU1440\790\CarPlayClusterControls.jar"
 Copy-File "$repo\src\toolbox\restore-carplay-maps.sh" "$mqb\Toolbox\scripts\cpmap_restore_core.sh"
+# MU1427 (791 only): firmware-specific core.so and navigation patch, MQB menu
+# detection, and the MU1427 jar for the toolbox "Ignore navigation-active" entry.
+$mu1427 = "$repo\MU1427\791_AID12.3\payload"
+Copy-File "$mu1427\profiles\MU1427\791\core.so" "$mqbPayload\profiles\MU1427\791\core.so"
+Copy-File "$mu1427\common\CarPlayNavigationPatch.jar" "$mqbPayload\profiles\MU1427\791\CarPlayNavigationPatch.jar"
+Copy-File "$mu1427\common\CarPlayNavigationPatch.jar" "$mqb\Modifications\Lsd\MU1427\NavActiveIgnore.jar"
+foreach ($menuScript in 'cpmap_common.sh','cpmap_install_791.sh','cpmap_install_790.sh','install_nav_active_ignore.sh','uninstall_nav_active_ignore.sh') {
+    Copy-File "$repo\src\toolbox\mqb\$menuScript" "$mqb\Toolbox\scripts\$menuScript"
+}
 [IO.Compression.ZipFile]::CreateFromDirectory($mqb, (Join-Path $out 'VW_SKODA_ALL_CarPlay_Maps_VC_FULL_MQB_Toolbox_V4.2A.zip'), [IO.Compression.CompressionLevel]::Optimal, $false)
 $hashes = @(Get-ChildItem -LiteralPath $out -Filter '*.zip' | Sort-Object Name | ForEach-Object {
     '{0}  {1}' -f (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $_.Name

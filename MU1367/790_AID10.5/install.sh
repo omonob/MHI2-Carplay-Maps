@@ -15,7 +15,8 @@ if [ -z "$PAYLOAD" ] || [ -z "$EXPECTED_MU" ] || [ -z "$INSTRUMENT" ]; then
 fi
 
 case "$EXPECTED_MU:$INSTRUMENT" in
-    MU1102:791|MU1102:790|MU1367:791|MU1367:790|MU1440:790) ;;
+    MU1102:791|MU1102:790|MU1367:791|MU1367:790|MU1427:791|MU1440:790) ;;
+    MU1427:*) fail "MU1427_REQUIRES_791" ;;
     *) fail "UNSUPPORTED_PROFILE" ;;
 esac
 
@@ -54,6 +55,7 @@ case "$JXE_SIZE" in
     55915411) DETECTED_MU="MU1102" ;;
     55840541) DETECTED_MU="MU1367" ;;
     55840933) DETECTED_MU="MU1440" ;;
+    52751492) DETECTED_MU="MU1427" ;;
     *) fail "UNSUPPORTED_JXE_SIZE_$JXE_SIZE" ;;
 esac
 
@@ -71,6 +73,10 @@ if [ "$EXPECTED_MU" = "MU1440" ] && [ -s "$PAYLOAD/profiles/MU1440/790/CarPlayCl
     CONTROL_JAR="$PAYLOAD/profiles/MU1440/790/CarPlayClusterControls.jar"
 fi
 NAV_JAR="$PAYLOAD/common/CarPlayNavigationPatch.jar"
+# A firmware-specific navigation patch (MU1427) overrides the common one.
+if [ -s "$PAYLOAD/profiles/$EXPECTED_MU/$INSTRUMENT/CarPlayNavigationPatch.jar" ]; then
+    NAV_JAR="$PAYLOAD/profiles/$EXPECTED_MU/$INSTRUMENT/CarPlayNavigationPatch.jar"
+fi
 NAV_TARGET="$JARS/CarPlayNavigationPatch.jar"
 BRIDGE="$PAYLOAD/common/altscreen-most-bridge"
 SUPERVISOR="$PAYLOAD/common/carplay-cluster-supervisor"
@@ -83,9 +89,15 @@ for required in "$CORE" "$WRAPPER" "$CONTROL_JAR" "$NAV_JAR" "$BRIDGE" "$SUPERVI
 done
 
 # ZIP central-directory entry names are plaintext even for compressed classes.
-# Check the seven navigation-ignore classes, not just the JAR filename. This
-# also recognizes a navigation patch merged with another user's metadata JAR.
-has_navigation_patch() {
+# Check the navigation-ignore classes, not just the JAR filename. This also
+# recognizes a navigation patch merged with another user's metadata JAR.
+#
+# The upstream MQB Toolbox NavActiveIgnore.jar replaces whole HMI classes that
+# were built for MU1102/MU1367/MU1440. On MU1427 its CarPlayModeHandling
+# constructor does not match the firmware (NoSuchMethodError) and CarPlay
+# cannot start, so MU1427 uses its own build (see MU1427/NavActiveIgnore),
+# recognized by its helper class.
+has_generic_navigation_patch() {
     [ -s "$1" ] || return 1
     for nav_class in \
         de/esolutions/fw/comm/dsi/carplay/impl/DSICarplayProxy.class \
@@ -98,6 +110,26 @@ has_navigation_patch() {
         grep -q "$nav_class" "$1" 2>/dev/null || return 1
     done
     return 0
+}
+has_mu1427_navigation_patch() {
+    [ -s "$1" ] || return 1
+    for nav_class in \
+        de/vw/mib/navactiveignore/NavActiveIgnore.class \
+        de/esolutions/fw/comm/dsi/carplay/impl/DSICarplayProxy.class \
+        de/vw/mib/asl/internal/carplay/common/CarPlayModeHandling.class \
+        de/vw/mib/asl/internal/navigation/api/impl/ASLNavigationServices.class \
+        de/vw/mib/asl/internal/androidauto/target/NavigationListener.class \
+        de/vw/mib/asl/internal/androidauto/target/RequestHandler.class; do
+        grep -q "$nav_class" "$1" 2>/dev/null || return 1
+    done
+    return 0
+}
+has_navigation_patch() {
+    if [ "$EXPECTED_MU" = "MU1427" ]; then
+        has_mu1427_navigation_patch "$1"
+    else
+        has_generic_navigation_patch "$1"
+    fi
 }
 has_navigation_patch "$NAV_JAR" || fail "NAVIGATION_PAYLOAD_INVALID"
 NAV_INSTALL=yes
@@ -122,6 +154,9 @@ for boot_jar in $BOOT_JARS; do
         /mnt/app/*) boot_file="$MMX$boot_jar" ;;
         *) continue ;;
     esac
+    if [ "$EXPECTED_MU" = "MU1427" ] && has_generic_navigation_patch "$boot_file" && ! has_mu1427_navigation_patch "$boot_file"; then
+        fail "GENERIC_NAVIGATION_PATCH_BREAKS_MU1427_CARPLAY ($boot_jar)"
+    fi
     if has_navigation_patch "$boot_file"; then
         NAV_INSTALL=no
         NAV_EXISTING="$boot_jar"

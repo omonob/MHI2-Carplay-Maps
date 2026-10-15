@@ -9,7 +9,8 @@ import zipfile
 REPO = Path(__file__).resolve().parents[1]
 PROFILES = [("MU1102", "791", 55915411), ("MU1102", "790", 55915411),
             ("MU1367", "791", 55840541), ("MU1367", "790", 55840541),
-            ("MU1440", "790", 55840933)]
+            ("MU1440", "790", 55840933), ("MU1427", "791", 52751492)]
+GENERIC_NAV = REPO / "MU1367/791_AID12.3/payload/common/CarPlayNavigationPatch.jar"
 
 
 def package(mu, cluster):
@@ -30,7 +31,7 @@ def run(script, root, *args, ok=True, extra_env=None):
     return result.stdout
 
 
-def fixture(root, size, mode, nav_payload):
+def fixture(root, size, mode, nav_payload, generic_nav=GENERIC_NAV):
     jxe = root / "ifs/lsd.jxe"
     jxe.parent.mkdir(parents=True)
     with jxe.open("wb") as output:
@@ -43,6 +44,10 @@ def fixture(root, size, mode, nav_payload):
     jars = lsd.parent / "jars"
     jars.mkdir(parents=True)
     text = '#!/bin/sh\nBASE_DIR=/mnt/app/eso/hmi\nBOOTCLASSPATH=""\n'
+    if mode == "generic-existing":
+        # The upstream MQB Toolbox jar, already active: breaks CarPlay on MU1427.
+        text += 'BOOTCLASSPATH="$BOOTCLASSPATH -Xbootclasspath/p:$BASE_DIR/lsd/jars/NavActiveIgnore.jar"\n'
+        (jars / "NavActiveIgnore.jar").write_bytes(generic_nav.read_bytes())
     if mode in ("existing", "merged", "missing-file", "partial"):
         name = "ExistingMergedPatch.jar" if mode == "merged" else "NavActiveIgnore.jar"
         text += 'BOOTCLASSPATH="$BOOTCLASSPATH -Xbootclasspath/p:$BASE_DIR/lsd/jars/' + name + '"\n'
@@ -67,7 +72,14 @@ def main():
         nav = payload / "common/CarPlayNavigationPatch.jar"
         with zipfile.ZipFile(nav) as archive:
             assert archive.testzip() is None
-            assert len([n for n in archive.namelist() if n.endswith(".class")]) == 9
+            classes = [n for n in archive.namelist() if n.endswith(".class")]
+            if mu == "MU1427":
+                # Built from MU1427's own lsd.jxe classes (MU1427/NavActiveIgnore).
+                assert len(classes) == 6
+                assert "de/vw/mib/navactiveignore/NavActiveIgnore.class" in classes
+                assert not any("exboxm" in n for n in classes)
+            else:
+                assert len(classes) == 9
             for name in archive.namelist():
                 if name.endswith(".class"):
                     assert int.from_bytes(archive.read(name)[6:8], "big") == 46
@@ -78,13 +90,18 @@ def main():
                 if name.endswith(".class"):
                     assert int.from_bytes(archive.read(name)[6:8], "big") == 48
             assert not any("AbstractDispatcher" in n or "IReplyService" in n for n in archive.namelist())
-        for mode in ("stock", "existing", "merged", "missing-file", "partial", "bad-startup"):
+        modes = ["stock", "existing", "merged", "missing-file", "partial", "bad-startup"]
+        if mu == "MU1427":
+            modes.append("generic-existing")
+        for mode in modes:
             with tempfile.TemporaryDirectory(prefix="cpmap-offline-") as tmp:
                 root = Path(tmp)
                 dio, lsd, jars = fixture(root, size, mode, nav)
                 before_dio, before_lsd = digest(dio), digest(lsd)
-                if mode in ("partial", "bad-startup"):
-                    run(pkg / "install.sh", root, payload, mu, cluster, ok=False)
+                if mode in ("partial", "bad-startup", "generic-existing"):
+                    output = run(pkg / "install.sh", root, payload, mu, cluster, ok=False)
+                    if mode == "generic-existing":
+                        assert "GENERIC_NAVIGATION_PATCH_BREAKS_MU1427_CARPLAY" in output
                     assert digest(dio) == before_dio and digest(lsd) == before_lsd
                     continue
                 output = run(pkg / "install.sh", root, payload, mu, cluster)

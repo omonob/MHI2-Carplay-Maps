@@ -16,3 +16,17 @@ The installer extends the existing `-Xbootclasspath/p:` option, or creates one b
 Only MU1440 selects the optional profile-specific roller control JAR. All other profiles retain their previous control JAR. Firmware gates, native libraries, 30 fps release display behavior and installation entry points are unchanged.
 
 导航补丁来自工具箱原有组件，按原字节分发，不加入信息映射功能。检测依据是启动加载行和 JAR 内补丁类，不是识别仪表提示截图。已有完整补丁保持原样；补装使用单独文件，并在原厂恢复时撤销。MU1440 以外的方向盘控制 JAR 与原版保持一致。
+
+## MU1427
+
+MU1427 (`lsd.jxe` 52,751,492 bytes) is supported with the 791/794 AID 12.3 cluster only.
+
+- **Navigation patch:** the generic `NavActiveIgnore.jar` above stops CarPlay from starting on MU1427 (`NoSuchMethodError` in the CarPlay HMI target). MU1427 therefore uses its own build, `MU1427/791_AID12.3/payload/common/CarPlayNavigationPatch.jar`, made from MU1427's `lsd.jxe` classes with the tooling in `MU1427/NavActiveIgnore/`.
+  - The installer prefers `payload/profiles/<MU>/<cluster>/CarPlayNavigationPatch.jar` when present.
+  - On MU1427 it detects the patch by its own class set, including the helper class `de/vw/mib/navactiveignore/NavActiveIgnore.class`.
+  - It stops with `GENERIC_NAVIGATION_PATCH_BREAKS_MU1427_CARPLAY` if the generic jar is already active.
+- **`core.so`:** the MU1427 `core.so` fixes the alt-screen AES key offset for AirPlay 210.81. See `MU1427/README.md`.
+- **MQB Toolbox build:** `tools/Build-ToolboxUpdate.ps1` adds the MU1427 `core.so` and navigation patch under `payload/profiles/MU1427/791/`. From `src/toolbox/mqb/` it also adds:
+  - the menu scripts that detect MU1427 (`cpmap_common.sh`, and `cpmap_install_791.sh` / `cpmap_install_790.sh`, where 790 refuses MU1427);
+  - the toolbox "Ignore navigation-active" scripts, which select `Modifications/Lsd/MU1427/NavActiveIgnore.jar` on MU1427, edit `lsd.sh` in place and coexist with the CarPlay Maps VC prepend line.
+- **M.I.B. 3.6.0:** there is no MU1427 package.
