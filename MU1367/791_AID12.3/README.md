@@ -1,7 +1,7 @@
 # MU1367 / 791 AID 12.3
 
 - Firmware gate: `/ifs/lsd.jxe` = **55,840,541 bytes**
-- Display: **40 fps, navigation centered**
+- Display: **40 fps declaration, navigation centered**
 - Steering controls: short press zoom; long press map switch
 - Profile core: `payload/profiles/MU1367/791/core.so`
 

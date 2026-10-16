@@ -11,7 +11,7 @@ Free and open-source community project by **omonob (QCDWJ)**.<br>
 
 - CarPlay 地图视频投屏到原厂液晶仪表。
 - 方向盘短按放大/缩小，长按切换地图。
-- 791 AID 12.3：40 fps，导航居中。
+- 791 AID 12.3：40 fps 声明，导航居中。
 - 790 AID 10.5：40 fps，未导航居中、导航偏右。
 - 明文运行目录：<code>/mnt/app/carplaymaps</code>。
 
@@ -43,7 +43,7 @@ This Release contains **complete toolbox distributions** that can be extracted d
 
 - CarPlay map video on the factory virtual cockpit.
 - Short steering-wheel press for zoom; long press for map switching.
-- 791 AID 12.3: 40 fps, navigation centered.
+- 791 AID 12.3: 40 fps declaration, navigation centered.
 - 790 AID 10.5: 40 fps, non-navigation centered, navigation right.
 - Plaintext runtime under <code>/mnt/app/carplaymaps</code>.
 
