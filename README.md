@@ -20,31 +20,41 @@
 
 ## 中文说明
 
-### v1.2.0 更新
+### v1.2.1 修复与安装方式调整
+
+**请使用 v1.2.1 MQB 完整工具箱替换旧 SD 卡文件，不要反复运行 v1.0–v1.2 的旧安装脚本。**
+
+- 修复导航补丁完整却报 `NAVIGATION_PAYLOAD_INVALID` 的安装兼容性问题。安装器不再用文本工具直接搜索二进制 JAR；先校验随包补丁，再以车机兼容的文本形式识别补丁类。
+- 未安装 navigation 补丁时自动补装；已有完整补丁保持原样。本项目独立导航 JAR 的残缺副本可在重装时自动修复。
+- **仅保留 MQB Toolbox 交互安装**。撤下 M.I.B. 自动刷写安装包及构建入口，不再推荐通过 SWDL 自动安装本项目。
+- 791 的 40 FPS 显示优化、790 参数、斯柯达滑轮及大众按键控制均不改变。
+
+[下载 v1.2.1 MQB 完整工具箱与校验文件](https://github.com/omonob/MHI2-Carplay-Maps/releases/tag/toolbox-plaintext-v1.2.1) · [更新说明](./releases/toolbox-plaintext-v1.2.1.md)
+
+### v1.2.0 历史更新
 
 本次加入 **791 仪表 40 FPS 显示优化**，保持导航居中。只更新 MU1102/791、MU1367/791 及通用 MQB 包内对应核心；790、MU1440 斯柯达滑轮、navigation 前置补丁和安装入口保持不变。
 
 40 fps 是协商声明，实际显示帧率取决于手机、地图内容和仪表消费能力。旧 791 核心本已声明 40 fps，本次同步修正过时的主页标注。
 
-[下载 v1.2.0 完整工具箱与校验文件](https://github.com/omonob/MHI2-Carplay-Maps/releases/tag/toolbox-plaintext-v1.2.0) · [更新说明](./releases/toolbox-plaintext-v1.2.0.md)
+[历史更新说明](./releases/toolbox-plaintext-v1.2.0.md)；安装请使用上方 v1.2.1。
 
-### v1.1.0 更新
+### v1.1.0 历史更新
 
 本次只更新以下两项，其余显示参数、支持矩阵、安装入口及付费说明保持不变。
 
 1. **自动补装 navigation 导航补丁**：安装时检查启动加载配置和导航补丁类。未安装时自动补装，解决 CarPlay 开始导航后提示“已在移动设备中激活”并关闭仪表地图的问题；已有完整补丁会保留，不覆盖原有信息映射 JAR。原厂 `lsd.sh` 无补丁加载行时也可安装。这是地图共存补丁，不是导航文字或音乐信息映射功能。
 2. **MU1440 Škoda 滑轮缩放**：上拨放大、下拨缩小；滑轮按压不映射。仅更新 MU1440 的控制 JAR，大众按键逻辑不变。缩放需要手机地图 App 支持，高德地图已验证可用，百度地图不支持该缩放操作。
 
-[下载 v1.1.0 完整工具箱与校验文件](https://github.com/omonob/MHI2-Carplay-Maps/releases/tag/toolbox-plaintext-v1.1.0) · [更新说明](./releases/toolbox-plaintext-v1.1.0.md)
+[历史更新说明](./releases/toolbox-plaintext-v1.1.0.md)；安装请使用上方 v1.2.1。
 
 ### 项目简介
 
 CarPlay Maps VC 是一个面向大众与斯柯达 MHI2 车机的免费开源项目。它把 CarPlay 的地图视频画面送到原厂液晶仪表，并提供方向盘地图控制。
 
-当前公开版本以经过验证的 V70 显示与控制逻辑为基线，加入 791 40 FPS 显示优化，提供两种完整工具箱：
+当前公开版本以经过验证的 V70 显示与控制逻辑为基线，加入 791 40 FPS 显示优化，**只提供 MQB 完整工具箱**：
 
 - **MQB Toolbox 交互安装版**：工具箱自动识别 MU 固件，用户只需选择仪表型号。
-- **M.I.B. Toolbox 自动安装版**：每个压缩包固定对应一个 MU 与仪表组合，插卡后通过 SWDL 自动执行。
 
 > [!IMPORTANT]
 > 本项目只实现 CarPlay 地图视频投屏与方向盘地图控制。它不是音乐信息、封面、导航文字、车道引导或启动动画补丁。
@@ -85,7 +95,7 @@ CarPlay Maps VC 是一个面向大众与斯柯达 MHI2 车机的免费开源项�
 | MU1440 Škoda | 55,840,933 bytes | ❌ | ✅ |
 
 > [!WARNING]
-> MU1440 仅支持 Škoda 790 仪表包。不要混用不同固件或不同仪表的 M.I.B. 压缩包。
+> MU1440 仅支持 Škoda 790 仪表。不要选择 791；也不要继续使用已撤下的 M.I.B. 自动刷写包。
 
 ### 下载
 
@@ -107,19 +117,9 @@ CarPlay Maps VC 是一个面向大众与斯柯达 MHI2 车机的免费开源项�
 
 | 文件 | 用途 |
 | --- | --- |
-| [VW_SKODA_ALL_CarPlay_Maps_VC_FULL_MQB_Toolbox_V4.2A.zip](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.0/VW_SKODA_ALL_CarPlay_Maps_VC_FULL_MQB_Toolbox_V4.2A.zip) | 一个包支持 MU1102、MU1367、MU1440；菜单中选择 791 或 790 |
+| [VW_SKODA_ALL_CarPlay_Maps_VC_FULL_MQB_Toolbox_V4.2A.zip](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.1/VW_SKODA_ALL_CarPlay_Maps_VC_FULL_MQB_Toolbox_V4.2A.zip) | 一个包支持 MU1102、MU1367、MU1440；菜单中选择 791 或 790 |
 
-#### M.I.B. Toolbox 3.6.0
-
-| 文件 | 固件 / 仪表 |
-| --- | --- |
-| [MU1102 / 791/794](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.0/VW_MU1102_791.794_CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0.zip) | MU1102 + 791/794 AID 12.3 |
-| [MU1102 / 790](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.0/VW_MU1102_790_CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0.zip) | MU1102 + 790 AID 10.5 |
-| [MU1367 / 791/794](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.0/VW_MU1367_791.794_CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1367_791.zip) | MU1367 + 791/794 AID 12.3 |
-| [MU1367 / 790](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.0/VW_MU1367_790_CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0.zip) | MU1367 + 790 AID 10.5 |
-| [MU1440 / 790 Škoda](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.0/SKODA_MU1440_790_CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0.zip) | MU1440 Škoda + 790 AID 10.5 |
-
-下载后请使用 [FULL_TOOLBOX_SHA256.txt](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.0/FULL_TOOLBOX_SHA256.txt) 校验文件。
+下载后请使用 [FULL_TOOLBOX_SHA256.txt](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.1/FULL_TOOLBOX_SHA256.txt) 校验文件。
 
 PowerShell 校验示例：
 
@@ -149,17 +149,7 @@ PowerShell 校验示例：
 > [!NOTE]
 > 付费选项是与本仓库开源内容分开的扩展功能和技术服务，并不是开源软件的授权费。购买前请通过商品页面确认自己的固件、仪表以及具体支持范围。
 
-### 两种安装方法
-
-| 项目 | MQB Toolbox | M.I.B. Toolbox |
-| --- | --- | --- |
-| 操作方式 | 在工具箱菜单中手动选择 | 插卡后通过 SWDL 自动执行 |
-| 固件识别 | 自动识别 MU | 每个 ZIP 已锁定一个 MU |
-| 仪表选择 | 用户选择 791 或 790 | 下载时选择固定仪表包 |
-| 重启方式 | 安装器不自动重启，完成后手动完整重启 | M.I.B./SWDL 负责正常更新与重启流程 |
-| 适合场景 | 已经使用 MQB Toolbox，希望可视化选择 | 希望使用独立、固定配置的自动安装包 |
-
-#### 方法 A：MQB Toolbox 交互安装
+### MQB Toolbox 交互安装
 
 1. 下载 <code>VW_SKODA_ALL_CarPlay_Maps_VC_FULL_MQB_Toolbox_V4.2A.zip</code>。
 2. 将压缩包内容直接解压到 SD 卡根目录，不要额外套一层同名文件夹。
@@ -176,16 +166,6 @@ MQB 菜单还提供：
 
 - <code>Show CarPlay Maps VC status</code>：查看当前安装状态。
 - <code>Restore factory files</code>：恢复安装时保存的原厂文件；恢复后同样需要完整重启。
-
-#### 方法 B：M.I.B. Toolbox 自动安装
-
-1. 在五个 M.I.B. ZIP 中选择**唯一匹配**当前 MU 与仪表的版本。
-2. 将所选压缩包内容直接解压到一张独立 SD 卡的根目录。
-3. 不要把两个不同 profile 的文件混在同一张卡中。
-4. 插入 SD 卡并启动/重启车机，M.I.B. 的 SWDL 流程会自动开始。
-5. 自动流程先执行原 M.I.B. 备份与 Launcher 安装，成功后才安装 CarPlay Maps VC。
-6. 更新期间保持稳定供电，不要拔卡或中断车机。
-7. M.I.B./SWDL 完成其正常重启后，移除 SD 卡并连接 iPhone 测试。
 
 ### 技术实现
 
@@ -208,21 +188,22 @@ MQB 菜单还提供：
 - **KornShell / POSIX Shell**：车机端安装、状态检测、恢复与自动化流程。
 - **Java/JAR**：方向盘地图控制与 boot classpath 集成。
 - **MQB Toolbox GEM/ESD**：英文菜单、自动 MU 识别、安装/状态/恢复入口。
-- **M.I.B. 3.6.0 SWDL/Launcher**：五个 profile 锁定的自动安装版本。
 - **PowerShell**：完整工具箱组装、发布包、SHA-256 清单和结构化 QA。
 - **Git 与 GitHub Releases**：版本管理、发布说明、校验清单和附件分发。
 
 ### 构建与验证状态
 
-2026-09-30 发布构建已完成：
+v1.2.1 发布构建检查：
 
-- 五个固定 M.I.B. profile 的首次安装路径测试。
+- 对 MU1102/791、MU1102/790、MU1367/791、MU1367/790、MU1440/790 执行 MQB 安装器测试。
+- 使用实际 v1.2.0 ZIP 和文本限定搜索测试环境复现导航补丁误判，再测试修复后的完整 MQB ZIP。
+- 缺少补丁时补装，已有完整独立或合并补丁时保留，本项目残缺独立补丁自动修复。
 - 重复安装不会重复添加 boot classpath。
 - 恢复原厂文件后删除项目运行目录并还原原始状态。
 - 错误固件和不支持的仪表组合会在写入前停止。
-- Shell 语法、M.I.B. 元数据校验值、ELF 头、JAR 完整性检查。
+- Shell 语法、补丁校验、JAR 完整性和失败回滚检查。
 - 工具箱显示文本为英文 ASCII，脚本统一使用 LF 换行。
-- 六个完整工具箱 ZIP 全量读取与 SHA-256 校验。
+- 一个完整 MQB ZIP 全量读取与 SHA-256 校验；相对 v1.2.0 只修改安装脚本，其他包内文件逐字节保留。
 
 当前发布包仍要求每个固件/仪表组合分别进行实车验证。790 与 791 实拍演示视频将在压缩后另行加入 Release。
 
@@ -247,31 +228,41 @@ MQB 菜单还提供：
 
 ## English
 
-### v1.2.0 update
+### v1.2.1 installer fix and MQB-only distribution
+
+**Replace the old SD-card files with v1.2.1. Repeating the v1.0–v1.2 installer does not fix this error.**
+
+- Fixes a valid navigation JAR being rejected as `NAVIGATION_PAYLOAD_INVALID`. The installer validates the bundled patch and converts binary archive strings to target-compatible text before inspecting class names.
+- Automatically installs the navigation prerequisite when missing, retains complete existing patches, and repairs a damaged standalone navigation JAR previously installed by this project.
+- **MQB Toolbox interactive installation only.** M.I.B. automatic-flashing packages and their build entry points are withdrawn; do not use SWDL to install this project.
+- The 791 40 FPS optimization, 790 parameters, Skoda roller and Volkswagen button controls are unchanged.
+
+[Download the v1.2.1 full MQB toolbox and checksums](https://github.com/omonob/MHI2-Carplay-Maps/releases/tag/toolbox-plaintext-v1.2.1) · [Release notes](./releases/toolbox-plaintext-v1.2.1.md)
+
+### v1.2.0 historical update
 
 This release adds **791 40 FPS display optimization** while retaining the navigation-centered layout. Only MU1102/791, MU1367/791 and their cores in the universal MQB toolbox change. The 790 profiles, MU1440 Skoda roller control, navigation prerequisite and entry points remain unchanged.
 
 40 fps is a negotiated ceiling; actual frame delivery and display consumption depend on the phone, content and cluster. The earlier 791 native core already advertised 40 fps; stale top-level documentation is corrected.
 
-[Download v1.2.0 full toolboxes and checksums](https://github.com/omonob/MHI2-Carplay-Maps/releases/tag/toolbox-plaintext-v1.2.0) · [Release notes](./releases/toolbox-plaintext-v1.2.0.md)
+[Historical release notes](./releases/toolbox-plaintext-v1.2.0.md); use v1.2.1 above for installation.
 
-### v1.1.0 update
+### v1.1.0 historical update
 
 Only the following two changes are included. Display parameters, compatibility, installation entry points and paid-support information remain unchanged.
 
 1. **Automatic navigation prerequisite patch**: the installer checks the boot configuration and navigation patch classes. If missing, it installs the patch that prevents CarPlay navigation from reporting “activated on the mobile device” and closing the cluster map. An existing complete patch is retained, including a merged metadata JAR. Unpatched factory `lsd.sh` files are now supported. This enables map coexistence; it does not add navigation-text or music metadata mapping.
 2. **MU1440 Skoda roller zoom**: roll up to zoom in and down to zoom out; pressing the roller is not mapped. Only the MU1440 control JAR changes; Volkswagen button behavior stays the same. The phone map app must support zoom commands: Amap was verified, while Baidu Maps does not support this operation.
 
-[Download v1.1.0 full toolboxes and checksums](https://github.com/omonob/MHI2-Carplay-Maps/releases/tag/toolbox-plaintext-v1.1.0) · [Release notes](./releases/toolbox-plaintext-v1.1.0.md)
+[Historical release notes](./releases/toolbox-plaintext-v1.1.0.md); use v1.2.1 above for installation.
 
 ### Overview
 
 CarPlay Maps VC is a free and open-source community project for Volkswagen and Skoda MHI2 systems. It sends the CarPlay map video to the factory virtual cockpit and adds steering-wheel map controls.
 
-The public release uses the validated V70 display/control baseline, adds the 791 40 FPS display optimization, and provides two complete installation routes:
+The public release uses the validated V70 display/control baseline, adds the 791 40 FPS display optimization, and provides **one complete MQB toolbox installation route**:
 
 - **MQB Toolbox interactive package**: detects the MU firmware automatically; the user selects the cluster type.
-- **M.I.B. Toolbox automatic package**: each archive is locked to one MU/cluster profile and runs through the SWDL workflow.
 
 ### Included
 
@@ -323,13 +314,8 @@ For manual integration into an existing toolbox, use the standalone project file
 
 Each directory contains only the matching installer, shared runtime files, profile-specific `core.so`, status script, and factory-restore script. Most users should download the full toolbox archives from Releases.
 
-- [Full MQB Toolbox V4.2A](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.0/VW_SKODA_ALL_CarPlay_Maps_VC_FULL_MQB_Toolbox_V4.2A.zip)
-- [Full M.I.B. 3.6.0 — MU1102 / 791/794](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.0/VW_MU1102_791.794_CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0.zip)
-- [Full M.I.B. 3.6.0 — MU1102 / 790](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.0/VW_MU1102_790_CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0.zip)
-- [Full M.I.B. 3.6.0 — MU1367 / 791/794](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.0/VW_MU1367_791.794_CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0_MU1367_791.zip)
-- [Full M.I.B. 3.6.0 — MU1367 / 790](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.0/VW_MU1367_790_CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0.zip)
-- [Full M.I.B. 3.6.0 — MU1440 / 790 Skoda](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.0/SKODA_MU1440_790_CarPlay_Maps_VC_FULL_MIB_Toolbox_3.6.0.zip)
-- [SHA-256 manifest](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.0/FULL_TOOLBOX_SHA256.txt)
+- [Full MQB Toolbox V4.2A](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.1/VW_SKODA_ALL_CarPlay_Maps_VC_FULL_MQB_Toolbox_V4.2A.zip)
+- [SHA-256 manifest](https://github.com/omonob/MHI2-Carplay-Maps/releases/download/toolbox-plaintext-v1.2.1/FULL_TOOLBOX_SHA256.txt)
 
 ### Optional paid support
 
@@ -355,7 +341,7 @@ The paid option includes:
 > [!NOTE]
 > This is a separate feature and technical-support service, not a license fee for the open-source software. Confirm the exact firmware, cluster and supported scope on the product page before purchasing.
 
-### Installation route A: MQB Toolbox
+### Installation using MQB Toolbox
 
 1. Download the full MQB Toolbox archive.
 2. Extract its contents directly to the SD-card root.
@@ -368,29 +354,18 @@ The paid option includes:
 
 The MQB menu also includes status and factory-restore actions. A full reboot is required after restoration.
 
-### Installation route B: M.I.B. Toolbox
-
-1. Download exactly one archive matching the MU and cluster.
-2. Extract that archive directly to the root of a dedicated SD card.
-3. Never merge files from two profile archives.
-4. Insert the card and start/restart the unit.
-5. SWDL performs the original M.I.B. backup and Launcher installation before CarPlay Maps VC.
-6. Keep stable power and do not remove the card during the update.
-7. Allow M.I.B./SWDL to complete its normal reboot, then remove the card and test CarPlay.
-
 ### Development stack
 
 - QNX Neutrino 6.5 / ARMv7 runtime target.
 - KornShell and POSIX shell for install, status, restore and automation.
 - Java/JAR integration for steering-wheel map controls.
 - MQB Toolbox GEM/ESD menu integration.
-- M.I.B. 3.6.0 SWDL/Launcher integration.
 - PowerShell for complete-toolbox assembly, archives, SHA-256 manifests and QA.
 - Git and GitHub Releases for versioning and distribution.
 
 ### Build and verification status
 
-The 2026-09-30 release build passed offline first-install, repeat-install, factory-restore and wrong-profile-stop tests for all five package profiles. Shell syntax, M.I.B. metadata checksums, ELF headers, JAR integrity, ASCII/LF requirements, complete ZIP reads and SHA-256 hashes were checked.
+The v1.2.1 MQB archive is tested for all five firmware/cluster profiles: first install, repeat install, existing complete/merged navigation patch, missing or damaged project patch, factory restore and wrong-profile rejection. A text-only grep shim reproduces the old failure from the published v1.2.0 ZIP; the fixed full ZIP is tested under the same constraint. This is a host-side compatibility model, not execution of QNX on a head unit. Shell syntax, JAR integrity, rollback, ASCII/LF requirements, full ZIP reads and SHA-256 are checked. Only the installer changes inside the ZIP; all other v1.2.0 files remain byte-identical.
 
 Each firmware/cluster combination still requires independent live-vehicle validation. Compressed 790 and 791 demonstration videos will be added in a later Release update.
 

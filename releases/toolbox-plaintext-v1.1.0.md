@@ -1,5 +1,9 @@
 # CarPlay Maps VC v1.1.0
 
+> 历史记录：请安装 [v1.2.1 MQB 修复版](./toolbox-plaintext-v1.2.1.md)。本版导航补丁检查存在车机兼容性问题，M.I.B. 自动刷写包已撤下，下文仅保留历史说明。
+>
+> Historical record: use [the v1.2.1 MQB fix](./toolbox-plaintext-v1.2.1.md). The old navigation check has a target-compatibility defect; M.I.B. automatic-flashing packages are withdrawn. The text below is historical only.
+
 ## 中文更新说明
 
 本次更新集成导航前置补丁，并增加 MU1440 斯柯达方向盘滑轮缩放。其他功能与 v1.0.0 保持一致，仍提供完整 MQB Toolbox 和五个固定固件/仪表组合的完整 M.I.B. Toolbox 压缩包，解压到 SD 卡根目录即可使用。

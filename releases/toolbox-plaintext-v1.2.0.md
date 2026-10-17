@@ -1,5 +1,9 @@
 # CarPlay Maps VC v1.2.0
 
+> 历史记录：本版安装器的导航补丁检查存在兼容性问题，已由 [v1.2.1 MQB 修复版](./toolbox-plaintext-v1.2.1.md) 替代。M.I.B. 自动刷写包已撤下，请勿继续使用下方历史安装方式。
+>
+> Historical record: the navigation prerequisite check is superseded by [the v1.2.1 MQB fix](./toolbox-plaintext-v1.2.1.md). M.I.B. automatic-flashing packages are withdrawn; the installation routes below are historical, not current instructions.
+
 作者 / Author: [omonob（汽车大玩家）](https://github.com/omonob)
 
 ## 中文更新说明

@@ -3,7 +3,7 @@
 PAYLOAD="$1"
 EXPECTED_MU="$2"
 INSTRUMENT="$3"
-VERSION="V70-PLAINTEXT-TOOLBOX-1.1.0"
+VERSION="V70-PLAINTEXT-TOOLBOX-1.2.1"
 
 fail() {
     echo "CPMAP_INSTALL_FAIL=$1"
@@ -82,9 +82,27 @@ for required in "$CORE" "$WRAPPER" "$CONTROL_JAR" "$NAV_JAR" "$BRIDGE" "$SUPERVI
     [ -s "$required" ] || fail "PAYLOAD_MISSING_`basename "$required"`"
 done
 
-# ZIP central-directory entry names are plaintext even for compressed classes.
-# Check the seven navigation-ignore classes, not just the JAR filename. This
-# also recognizes a navigation patch merged with another user's metadata JAR.
+# The shipped upstream JAR is pinned independently of text inspection. cksum
+# is POSIX and available on the target; do not require a host-only SHA utility.
+navigation_payload_intact() {
+    [ -s "$1" ] || return 1
+    nav_checksum=`cksum < "$1" 2>/dev/null` || return 1
+    set -- $nav_checksum
+    [ "$#" -eq 2 ] && [ "$1" = 3499852279 ] && [ "$2" = 27179 ]
+}
+
+# QNX grep is a TEXT utility, not GNU binary grep. JAR filenames are printable
+# ZIP directory strings but the surrounding archive contains NULs. Convert all
+# non-ASCII-printable bytes to newlines before passing anything to grep. tr's
+# octal/range syntax is supported by QNX 6.5; no strings/unzip/GNU -a is needed.
+jar_has_class() {
+    [ -s "$1" ] || return 1
+    jar_text=`LC_ALL=C tr -c '\40-\176' '\12' < "$1"` || return 1
+    printf '%s\n' "$jar_text" | grep -F "$2" >/dev/null 2>&1
+}
+
+# Check all seven navigation-ignore classes, including patches merged with
+# another user's metadata JAR; never overwrite that unrelated metadata JAR.
 has_navigation_patch() {
     [ -s "$1" ] || return 1
     for nav_class in \
@@ -95,11 +113,12 @@ has_navigation_patch() {
         de/vw/mib/asl/internal/androidauto/target/RequestHandler.class \
         de/vw/mib/asl/internal/carplay/common/CarPlayModeHandling.class \
         de/vw/mib/asl/internal/exboxm/api/impl/guidance/ExboxGuidanceManagerImpl.class; do
-        grep -q "$nav_class" "$1" 2>/dev/null || return 1
+        jar_has_class "$1" "$nav_class" || return 1
     done
     return 0
 }
-has_navigation_patch "$NAV_JAR" || fail "NAVIGATION_PAYLOAD_INVALID"
+navigation_payload_intact "$NAV_JAR" || fail "NAVIGATION_PAYLOAD_CHECKSUM_MISMATCH_REEXTRACT_SD"
+has_navigation_patch "$NAV_JAR" || fail "NAVIGATION_PAYLOAD_CLASSES_MISSING_REEXTRACT_SD"
 NAV_INSTALL=yes
 NAV_EXISTING=""
 BOOT_JARS=`awk '
@@ -122,12 +141,18 @@ for boot_jar in $BOOT_JARS; do
         /mnt/app/*) boot_file="$MMX$boot_jar" ;;
         *) continue ;;
     esac
+    # A partial previous copy of our own standalone JAR is safe to repair.
+    # Other active overrides still require review if their patch is incomplete.
+    if [ "$boot_file" = "$NAV_TARGET" ] && ! navigation_payload_intact "$boot_file"; then
+        echo "CPMAP_NAVIGATION_PATCH=REPAIR_OWN_JAR"
+        continue
+    fi
     if has_navigation_patch "$boot_file"; then
         NAV_INSTALL=no
         NAV_EXISTING="$boot_jar"
         break
     fi
-    if [ -s "$boot_file" ] && grep -q 'de/esolutions/fw/comm/dsi/carplay/impl/DSICarplayProxy.class' "$boot_file" 2>/dev/null; then
+    if jar_has_class "$boot_file" 'de/esolutions/fw/comm/dsi/carplay/impl/DSICarplayProxy.class'; then
         NAV_CONFLICT=yes
     fi
 done
@@ -331,7 +356,7 @@ rm -f "$ROOT/cpmap-guard" "$ROOT/cpmap-auth" "$ROOT/cpmap-provision" "$ROOT/intr
 [ -s "$JARS/CarPlayClusterControls.jar" ] || fail "CONTROL_JAR_VERIFY_FAILED"
 [ `grep -c 'CarPlayClusterControls.jar' "$LSD" 2>/dev/null` -eq 1 ] || fail "BOOTCLASSPATH_VERIFY_FAILED"
 if [ "$NAV_INSTALL" = yes ]; then
-    has_navigation_patch "$NAV_TARGET" || { rollback_commit; fail "NAVIGATION_VERIFY_FAILED"; }
+    navigation_payload_intact "$NAV_TARGET" && has_navigation_patch "$NAV_TARGET" || { rollback_commit; fail "NAVIGATION_VERIFY_FAILED"; }
     [ `grep -c 'CarPlayNavigationPatch.jar' "$LSD" 2>/dev/null` -eq 1 ] || { rollback_commit; fail "NAVIGATION_CLASSPATH_VERIFY_FAILED"; }
 fi
 rm -rf "$OLD" "$STAGE" 2>/dev/null
