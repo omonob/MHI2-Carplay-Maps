@@ -1,5 +1,10 @@
 #!/bin/ksh
 
+# GEM runs scripts with a minimal PATH; extend it the same way the MQB
+# Toolbox's own scripts do (e.g. install_nav_active_ignore.sh). Host-side
+# fixture tests (CPMAP_TEST_ROOT) keep their PATH so command shims still apply.
+[ -n "${CPMAP_TEST_ROOT:-}" ] || export PATH=/proc/boot:/bin:/usr/bin:/usr/sbin:/sbin:/mnt/app/media/gracenote/bin:/mnt/app/armle/bin:/mnt/app/armle/sbin:/mnt/app/armle/usr/bin:/mnt/app/armle/usr/sbin:$PATH
+
 PAYLOAD="$1"
 EXPECTED_MU="$2"
 INSTRUMENT="$3"
@@ -47,6 +52,32 @@ if [ -z "${CPMAP_TEST_ROOT:-}" ] && [ ! -x "$DIO" ]; then
     fail "DIO_MANAGER_NOT_EXECUTABLE"
 fi
 
+# Verify every external tool exists BEFORE anything is changed.
+cpmap_has_tool() {
+    command -v "$1" >/dev/null 2>&1 && return 0
+    whence "$1" >/dev/null 2>&1 && return 0
+    return 1
+}
+CPMAP_MISSING=""
+for tool in ls grep awk cp mv rm mkdir chmod touch basename; do
+    cpmap_has_tool "$tool" || CPMAP_MISSING="$CPMAP_MISSING $tool"
+done
+if [ -z "${CPMAP_TEST_ROOT:-}" ]; then
+    for tool in mount slay; do
+        cpmap_has_tool "$tool" || CPMAP_MISSING="$CPMAP_MISSING $tool"
+    done
+    if [ -n "$MMX" ]; then
+        cpmap_has_tool on || CPMAP_MISSING="$CPMAP_MISSING on"
+    fi
+fi
+if [ -n "$CPMAP_MISSING" ]; then
+    echo "CPMAP_MISSING_TOOLS=$CPMAP_MISSING"
+    fail "REQUIRED_TOOLS_MISSING_NOTHING_CHANGED"
+fi
+CPMAP_HAVE_TR=no
+cpmap_has_tool tr && CPMAP_HAVE_TR=yes
+echo "CPMAP_TOOLS_OK (tr=$CPMAP_HAVE_TR)"
+
 line=`ls -ln "$JXE" 2>/dev/null` || fail "JXE_STAT_FAILED"
 set -- $line
 JXE_SIZE="$5"
@@ -84,11 +115,34 @@ done
 
 # The shipped upstream JAR is pinned independently of text inspection. cksum
 # is POSIX and available on the target; do not require a host-only SHA utility.
+# cksum is not present on every unit (GEM runs scripts with a minimal PATH).
+# 1) cksum works and matches -> OK.  2) cksum works but differs -> FAIL
+# (real mismatch, nothing installed).  3) cksum unavailable -> fall back to
+# the exact file size (JAR verified by SHA-256 on the PC beforehand).
 navigation_payload_intact() {
     [ -s "$1" ] || return 1
-    nav_checksum=`cksum < "$1" 2>/dev/null` || return 1
-    set -- $nav_checksum
-    [ "$#" -eq 2 ] && [ "$1" = 3499852279 ] && [ "$2" = 27179 ]
+    nav_file="$1"
+    # PATH (set above) already covers /bin, /usr/bin and the armle dirs.
+    nav_cksum=""
+    if cpmap_has_tool cksum; then
+        nav_cksum=`cksum < "$nav_file" 2>/dev/null` || nav_cksum=""
+    fi
+    if [ -n "$nav_cksum" ]; then
+        set -- $nav_cksum
+        if [ "$1" = 3499852279 ] && [ "$2" = 27179 ]; then
+            return 0
+        fi
+        echo "CPMAP_DEBUG_CKSUM=$nav_cksum"
+        return 1
+    fi
+    nav_line=`ls -ln "$nav_file" 2>/dev/null` || return 1
+    set -- $nav_line
+    if [ "$5" = 27179 ]; then
+        echo "CPMAP_NOTE=cksum unavailable, size check used"
+        return 0
+    fi
+    echo "CPMAP_DEBUG_SIZE=$5"
+    return 1
 }
 
 # QNX grep is a TEXT utility, not GNU binary grep. JAR filenames are printable
@@ -105,6 +159,14 @@ jar_has_class() {
 # another user's metadata JAR; never overwrite that unrelated metadata JAR.
 has_navigation_patch() {
     [ -s "$1" ] || return 1
+    # QNX units may ship without tr. The bundled JAR is byte-identical to the
+    # MQB Toolbox's NavActiveIgnore.jar (27179 bytes); recognise it by size.
+    if [ "$CPMAP_HAVE_TR" != yes ]; then
+        hn_line=`ls -ln "$1" 2>/dev/null` || return 1
+        set -- $hn_line
+        [ "$5" = 27179 ]
+        return $?
+    fi
     for nav_class in \
         de/esolutions/fw/comm/dsi/carplay/impl/DSICarplayProxy.class \
         de/esolutions/fw/dsi/androidauto2/DSIAndroidAuto2Dispatcher.class \
@@ -152,7 +214,16 @@ for boot_jar in $BOOT_JARS; do
         NAV_EXISTING="$boot_jar"
         break
     fi
-    if jar_has_class "$boot_file" 'de/esolutions/fw/comm/dsi/carplay/impl/DSICarplayProxy.class'; then
+    if [ "$CPMAP_HAVE_TR" != yes ]; then
+        # Without tr JARs cannot be inspected: any unknown override = stop.
+        # A referenced-but-missing JAR is handled like upstream (no conflict).
+        if [ -s "$boot_file" ]; then
+            case "$boot_file" in
+                */CarPlayClusterControls.jar) ;;
+                *) NAV_CONFLICT=yes; echo "CPMAP_UNKNOWN_BOOT_JAR=$boot_jar" ;;
+            esac
+        fi
+    elif jar_has_class "$boot_file" 'de/esolutions/fw/comm/dsi/carplay/impl/DSICarplayProxy.class'; then
         NAV_CONFLICT=yes
     fi
 done
