@@ -1,0 +1,38 @@
+{
+  "note": "Unchanged retained offline captures. No phone locations or information/music module screenshots. Charts are newly generated from sanitized numeric data.",
+  "schema": 1,
+  "images": [
+    {
+      "sha256": "a8aa8ea7649ab65346d3d503abde6c42b37c1a45b34c8b8b823bf831608ad4e6",
+      "capture": "native HMI offline capture; independent entry only",
+      "width": 1280,
+      "unchanged": true,
+      "file": "images/native-vc-entry.png",
+      "height": 640
+    },
+    {
+      "sha256": "257377930753d7220fe59167f200919ceeeffc2dd46536f010c1fcb9d007ce3b",
+      "capture": "native HMI offline capture; stock style reference",
+      "width": 1280,
+      "unchanged": true,
+      "file": "images/oem-dropdown-reference.png",
+      "height": 640
+    },
+    {
+      "sha256": "e53f09885ba650daa3a24550d91975eb9843db5eba504407622fb8ff12de2980",
+      "capture": "AID 10.5 native renderer; synthetic 1264x640 at 4 fps; not phone performance",
+      "width": 1010,
+      "unchanged": true,
+      "file": "images/mirror-aid10.5-fixture.png",
+      "height": 376
+    },
+    {
+      "sha256": "1595754a743122c308f84c0160f853c7beba7149afad88a6f343886b2ef991a8",
+      "capture": "AID 12.3 native renderer; synthetic 1264x640 at 4 fps; not phone performance",
+      "width": 800,
+      "unchanged": true,
+      "file": "images/mirror-aid12.3-fixture.png",
+      "height": 480
+    }
+  ]
+}

@@ -20,13 +20,13 @@
 
 只下载 `VW_SKODA_ALL_CarPlay_Maps_VC_FULL_MQB_Toolbox_V4.2A.zip`，核对 `FULL_TOOLBOX_SHA256.txt` 后，将内容直接解压到 SD 卡根目录。完整替换旧包文件，避免继续执行旧安装脚本。
 
-在 `Customization → CarPlay Maps VC` 中选择 791 或 790。支持范围仍为 MU1102、MU1367 的 791/790，以及 MU1440 斯柯达的 790。安装成功显示 `CPMAP_INSTALL_OK` 后手动完整重启，再连接手机测试。安装器不自动重启。
+在 `Customization → CarPlay Maps VC` 中选择 AID 12.3 或 AID 10.5。支持范围仍为 MU1102、MU1367 的 AID 12.3/AID 10.5，以及 MU1440 斯柯达的 AID 10.5。安装成功显示 `CPMAP_INSTALL_OK` 后手动完整重启，再连接手机测试。安装器不自动重启。
 
 不再提供 M.I.B. 自动刷写安装入口。旧版说明和 Git 标签仅作历史记录，不应继续用于安装。
 
 ### 保持不变与验证
 
-791 的 40 FPS 显示优化、790 显示参数、滑轮/按键控制、视频桥接和运行组件均保持 v1.2.0 原字节。ZIP 内只修改一个安装脚本，不加入音乐或导航文字映射、启动动画、设备绑定加密或守护进程。作者署名、开源许可、免责声明和独立付费支持说明保留。
+AID 12.3 的 40 FPS 显示优化、AID 10.5 显示参数、滑轮/按键控制、视频桥接和运行组件均保持 v1.2.0 原字节。ZIP 内只修改一个安装脚本，不加入音乐或导航文字映射、启动动画、设备绑定加密或守护进程。作者署名、开源许可、免责声明和独立付费支持说明保留。
 
 离线测试覆盖五个固件/仪表组合、首次安装、重装、导航补丁保留/补装/修复、恢复原厂、损坏载荷和失败回滚；同时测试最终 ZIP。文本限定搜索环境是针对 QNX 工具行为的兼容性模型，不代替各台车机的实车验证。
 
@@ -42,8 +42,8 @@ The old installer searched binary JAR data directly with a text utility. The fix
 - Corrupt bundled SD-card patch: stop before factory-file changes and ask for a fresh extraction.
 - Unknown incomplete CarPlay overrides from other projects: stop for review rather than overwrite unrelated mapping code.
 
-Download only `VW_SKODA_ALL_CarPlay_Maps_VC_FULL_MQB_Toolbox_V4.2A.zip`, verify `FULL_TOOLBOX_SHA256.txt`, and replace the old SD files with the archive contents at the card root. Select 791 or 790 under `Customization → CarPlay Maps VC`. The compatibility matrix remains MU1102 and MU1367 with 791/790, plus MU1440 Skoda with 790 only. After `CPMAP_INSTALL_OK`, perform a full manual reboot and test CarPlay. The installer never reboots automatically.
+Download only `VW_SKODA_ALL_CarPlay_Maps_VC_FULL_MQB_Toolbox_V4.2A.zip`, verify `FULL_TOOLBOX_SHA256.txt`, and replace the old SD files with the archive contents at the card root. Select AID 12.3 or AID 10.5 under `Customization → CarPlay Maps VC`. The compatibility matrix remains MU1102 and MU1367 with AID 12.3/AID 10.5, plus MU1440 Skoda with AID 10.5 only. After `CPMAP_INSTALL_OK`, perform a full manual reboot and test CarPlay. The installer never reboots automatically.
 
-All video/runtime binaries, the 791 40 FPS optimization, 790 display parameters and steering controls remain byte-identical to v1.2.0. Only one installer changes inside the ZIP. No music/navigation metadata mapping, startup animation, device-bound encryption or watchdog is added. Attribution, licensing, disclaimers and separate optional paid-support terms remain unchanged.
+All video/runtime binaries, the AID 12.3 40 FPS optimization, AID 10.5 display parameters and steering controls remain byte-identical to v1.2.0. Only one installer changes inside the ZIP. No music/navigation metadata mapping, startup animation, device-bound encryption or watchdog is added. Attribution, licensing, disclaimers and separate optional paid-support terms remain unchanged.
 
 Host-side tests cover all five firmware/cluster combinations, first/repeat install, patch preservation/installation/repair, factory restore, corrupted payloads, activation rollback and the final archive. A text-only grep shim reproduces the old archive's failure; it models target utility behavior and is not a substitute for live testing of every unit. Historical tags and notes are retained for reference, not installation.

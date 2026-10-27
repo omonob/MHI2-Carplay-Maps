@@ -25,11 +25,11 @@ keyValue
 
 script
     value sys 1 0x0100 "/eso/hmi/engdefs/scripts/mqb/cpmap_install_791.sh"
-    label "Install 791 AID 12.3 (AUTO MU)"
+    label "Install AID 12.3 (AUTO MU)"
 
 script
     value sys 1 0x0100 "/eso/hmi/engdefs/scripts/mqb/cpmap_install_790.sh"
-    label "Install 790 AID 10.5 (AUTO MU)"
+    label "Install AID 10.5 (AUTO MU)"
 
 script
     value sys 1 0x0100 "/eso/hmi/engdefs/scripts/mqb/cpmap_status.sh"

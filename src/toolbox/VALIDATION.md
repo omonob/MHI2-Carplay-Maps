@@ -33,7 +33,7 @@ Date: 2026-10-16. Scope: MQB installation only; no head-unit connection, deploym
 
 ## Failure reproduction
 
-`tests/test_qnx_navigation.py --baseline-archive <published-v1.2.0-MQB.zip> --baseline-only` reproduces `CPMAP_INSTALL_FAIL=NAVIGATION_PAYLOAD_INVALID` for MU1102/791, MU1102/790, MU1367/791, MU1367/790 and MU1440/790. The original bundled JAR passes ZIP CRC validation. A text-only grep shim rejects binary input to model the target utility boundary; it is not a QNX emulator.
+`tests/test_qnx_navigation.py --baseline-archive <published-v1.2.0-MQB.zip> --baseline-only` reproduces `CPMAP_INSTALL_FAIL=NAVIGATION_PAYLOAD_INVALID` for MU1102/AID 12.3, MU1102/AID 10.5, MU1367/AID 12.3, MU1367/AID 10.5 and MU1440/AID 10.5. The original bundled JAR passes ZIP CRC validation. A text-only grep shim rejects binary input to model the target utility boundary; it is not a QNX emulator.
 
 The old installation code passed the binary JAR directly to grep. The fix retains the exact upstream JAR and its checksum, translates binary surroundings to text with QNX-compatible tr operands, and searches that text rather than the binary file. This addresses the reproduced false-negative without disabling payload validation.
 

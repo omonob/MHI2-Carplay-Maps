@@ -1,8 +1,8 @@
-# MU1440_SKODA and 790 version 2.0
+# MU1440_SKODA and AID 10.5 version 2.0
 
 Exact firmware gate: 55840933 bytes. Output: 1010×376.
 
-Navigation card: Center, Left, Right, Off. Native core matches the on-unit 790 golden baseline; Waze has a known layout issue.
+Navigation card: Center, Left, Right, Off. Native core matches the on-unit AID 10.5 golden baseline; Waze has a known layout issue.
 
 This standalone file set is not the full Toolbox. Ordinary users should download the full MQB ZIP from Releases. On MMX, developers may run `/bin/ksh ./run-install.sh` from this directory. Back up the unit and disconnect CarPlay first. A complete reboot is required after `CPMAP_INSTALL_OK`; the script does not reboot automatically.
 

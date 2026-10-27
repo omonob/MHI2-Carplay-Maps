@@ -6,6 +6,8 @@ Free open-source CarPlay maps and screen mirroring for Volkswagen and Škoda vir
 
 [Downloads 下载](https://github.com/omonob/MHI2-Carplay-Maps/releases/latest) · [2.0 release notes 中英文更新说明](releases/toolbox-plaintext-v2.0.0.md) · [GPLv3](LICENSE)
 
+[开发进度、图片与帧率／延迟数据](docs/development/2026-10-28/README.md) · [Development report, images and measurements](docs/development/2026-10-28/README_EN.md)
+
 ## 中文说明
 
 ### 2.0 虚拟座舱设置
@@ -17,27 +19,27 @@ App-Connect 设置里增加独立的“虚拟座舱设置”入口，保留原�
 | 虚拟座舱地图 | CarPlay Maps 或原车地图 |
 | 虚拟座舱镜像 | CarPlay 屏幕镜像开启／关闭，地图优先，冲突项置灰 |
 | 无线 CarPlay | 测试状态接口，默认关闭；实际无线服务未发布 |
-| 导航卡片 | 790：中间、靠左、靠右、关闭；791：开启、关闭 |
+| 导航卡片 | AID 10.5：中间、靠左、靠右、关闭；AID 12.3：开启、关闭 |
 
 共用菜单保留 AA／CarLife 名称，但本包不包含对应引擎，相关选项不可选择。镜像缩放按键只调整画布，不改变仪表输出尺寸。独立导航文字、音乐信息、封面和启动动画不包含在此免费包内。
 
 ### 支持范围
 
-| 固件 | lsd.jxe 大小 | 791／794 AID 12.3 | 790 AID 10.5 |
+| 固件 | lsd.jxe 大小 | AID 12.3 | AID 10.5 |
 | --- | ---: | --- | --- |
 | MU1102 | 55,915,411 bytes | 800×480 | 1010×376 |
 | MU1367 | 55,840,541 bytes | 800×480 | 1010×376 |
 | MU1440 Škoda | 55,840,933 bytes | 不支持 | 1010×376，保留滑轮方向 |
 
-790 卡片核心沿用已上机黄金基线，Waze 卡片仍有已知布局问题。791 使用实验安全区 `(220,65,360,348)`，底边保持 413；该最终参数尚待实车确认，不能当作已通过实车验证的黄金版。完整 2.0 包并未在所有车型上验证。
+AID 10.5 卡片核心沿用已上机黄金基线，Waze 卡片仍有已知布局问题。AID 12.3 使用实验安全区 `(220,65,360,348)`，底边保持 413；该最终参数尚待实车确认，不能当作已通过实车验证的黄金版。完整 2.0 包并未在所有车型上验证。
 
-791 保留 40 fps 协商声明与每 5 帧请求一次 IDR。790 卡片基线声明上限为 60 fps；790 CP 镜像模式将原厂 10 fps 编码请求改为 30 fps。协商／请求值不等于所有手机和应用的实测显示帧率。
+AID 12.3 保留 40 fps 协商声明与每 5 帧请求一次 IDR。AID 10.5 卡片基线声明上限为 60 fps；AID 10.5 CP 镜像模式将原厂 10 fps 编码请求改为 30 fps。协商／请求值不等于所有手机和应用的实测显示帧率。
 
 ### 安装
 
 1. 保存本机系统备份，车辆停稳并持续供电，完全断开 CarPlay。
 2. 从 Releases 下载完整 MQB Toolbox ZIP，解压到 SD 卡根目录，用随包 SHA-256 文件校验。
-3. 进入 MQB Toolbox → Customization → CarPlay Maps VC，按真实仪表选择 790 或 791。
+3. 进入 MQB Toolbox → Customization → CarPlay Maps VC，按真实仪表选择 AID 10.5 或 AID 12.3。
 4. 安装器精确识别固件，已有有效导航共存补丁直接保留；缺少或本项目副本损坏则自动补齐。
 5. 看到 `CPMAP_INSTALL_OK` 后，通过工具箱流程完整重启，再打开 App-Connect 设置 → 虚拟座舱设置。
 
@@ -61,17 +63,17 @@ An independent Virtual Cockpit settings page is added under App-Connect settings
 
 The four selectors control VC Maps, VC Mirroring, the unreleased Wireless CarPlay test interface, and Navigation Card. Maps take priority over mirroring for the same source. Only the CarPlay engines are included; Android Auto and CarLife choices are disabled. The wireless switch is off by default and does not start a wireless service.
 
-790 has Center, Left, Right and Off card choices and a fixed 1010×376 output. 791 has On and Off and an 800×480 output. Canvas zoom changes content size, never the encoder dimensions. Steering zoom is routed to the canvas in CP mirroring and to the phone map otherwise.
+AID 10.5 has Center, Left, Right and Off card choices and a fixed 1010×376 output. AID 12.3 has On and Off and an 800×480 output. Canvas zoom changes content size, never the encoder dimensions. Steering zoom is routed to the canvas in CP mirroring and to the phone map otherwise.
 
-MU1102 and MU1367 support both cluster profiles. MU1440 Škoda supports 790 only. Exact firmware sizes are listed above; unknown profiles are rejected before factory files are modified.
+MU1102 and MU1367 support both cluster profiles. MU1440 Škoda supports AID 10.5 only. Exact firmware sizes are listed above; unknown profiles are rejected before factory files are modified.
 
-The 790 native card core is byte-identical to the on-unit golden baseline; Waze retains a known card-layout issue. The final 791 safe area `(220,65,360,348)` is an offline-tested experimental parameter, not a vehicle-validated golden release. The complete 2.0 package has not been verified on every vehicle.
+The AID 10.5 native card core is byte-identical to the on-unit golden baseline; Waze retains a known card-layout issue. The final AID 12.3 safe area `(220,65,360,348)` is an offline-tested experimental parameter, not a vehicle-validated golden release. The complete 2.0 package has not been verified on every vehicle.
 
-791 retains a 40 fps stream declaration and an IDR request every five frames. The 790 card baseline declares a 60 fps ceiling. Only in 790 CP-mirror mode, the original 10 fps encoder request becomes 30 fps. These are not universal measured-FPS guarantees.
+AID 12.3 retains a 40 fps stream declaration and an IDR request every five frames. The AID 10.5 card baseline declares a 60 fps ceiling. Only in AID 10.5 CP-mirror mode, the original 10 fps encoder request becomes 30 fps. These are not universal measured-FPS guarantees.
 
 ### Install and restore
 
-Back up the unit, maintain stable power with the vehicle stationary, and disconnect CarPlay completely. Extract the full MQB ZIP to the SD-card root. Open MQB Toolbox → Customization → CarPlay Maps VC and select the actual 790 or 791 instrument. The installer preserves an existing valid navigation coexistence patch and automatically installs or repairs this project's missing/incomplete copy.
+Back up the unit, maintain stable power with the vehicle stationary, and disconnect CarPlay completely. Extract the full MQB ZIP to the SD-card root. Open MQB Toolbox → Customization → CarPlay Maps VC and select the actual AID 10.5 or AID 12.3 instrument. The installer preserves an existing valid navigation coexistence patch and automatically installs or repairs this project's missing/incomplete copy.
 
 After `CPMAP_INSTALL_OK`, perform a complete head-unit reboot through the Toolbox procedure. Open App-Connect settings → Virtual Cockpit settings. Do not connect the phone after a failed install. Restore factory files restores the saved startup and JAR files, retaining separate user preferences.
 

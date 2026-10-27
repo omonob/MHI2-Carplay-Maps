@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "platform": "MU1102 AID 10.5",
+  "test_date": "2026-10-27",
+  "phase": "R3 before mirror-only rate-request patch",
+  "decoded_capture": {
+    "intervals": 8,
+    "max_fps": 28.69166,
+    "min_fps": 25.700334
+  },
+  "renderer": {
+    "windows": 25,
+    "window_duration": "approximately 1 second, not exact FPS intervals",
+    "min_frames": 28.0,
+    "mean_frames": 28.84,
+    "max_frames": 30.0
+  },
+  "software_stage": {
+    "mean_ms": 52.8,
+    "statistic": "arithmetic mean of 25 per-window avg_ms values",
+    "window_mean_max_ms": 57.0,
+    "end_to_end_measured": false,
+    "window_mean_min_ms": 48.0,
+    "definition": "decoded surface queued timestamp to completion of EGL swap; excludes phone input, native encoder and cluster display"
+  },
+  "encoder_before_patch": {
+    "physical_panel_fps_measured": false,
+    "requested_rate": 10,
+    "feed_events": 80,
+    "elapsed_ms": 8002,
+    "measured_feed_fps": 10.0
+  },
+  "after_r4": {
+    "requested_fps": 30,
+    "encoder_fps_remeasured": false,
+    "applies_to": "AID 10.5 CP mirroring only",
+    "user_hot_enable_disable": "confirmed working",
+    "end_to_end_latency_remeasured": false
+  },
+  "provenance": {
+    "renderer_log_sha256": "cad05299b8c36b05dcb3b6852cbb26bc4d0029321721f12f8a181bda68dd017e",
+    "encoder_log_sha256": "54466b63b3c195b2e11ecd337972adc741e3cdb4b685e8967820afcd9faf5cc1",
+    "export": "numeric allowlist, normalized encoder time, no complete raw logs"
+  }
+}

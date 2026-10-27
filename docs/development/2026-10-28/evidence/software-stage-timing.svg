@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420"><rect width="900" height="420" fill="#fff"/><g font-family="sans-serif" fill="#172331">
+<text x="46" y="40" font-size="24">Software-stage timing before R4</text><text x="46" y="68" font-size="13">Window averages only; NOT phone-to-instrument end-to-end latency.</text>
+<path d="M80 330 H850" stroke="#dbe3ea"/><text x="34" y="335" font-size="14">40</text>
+<path d="M80 275 H850" stroke="#dbe3ea"/><text x="34" y="280" font-size="14">46.25</text>
+<path d="M80 220 H850" stroke="#dbe3ea"/><text x="34" y="225" font-size="14">52.5</text>
+<path d="M80 165 H850" stroke="#dbe3ea"/><text x="34" y="170" font-size="14">58.75</text>
+<path d="M80 110 H850" stroke="#dbe3ea"/><text x="34" y="115" font-size="14">65</text>
+<polyline points="80,198 112.08,215.6 144.17,233.2 176.25,206.8 208.33,224.4 240.42,259.6 272.5,233.2 304.58,242 336.67,189.2 368.75,242 400.83,215.6 432.92,215.6 465,206.8 497.08,259.6 529.17,215.6 561.25,189.2 593.33,198 625.42,198 657.5,180.4 689.58,224.4 721.67,215.6 753.75,233.2 785.83,233.2 817.92,215.6 850,189.2" fill="none" stroke="#087fa0" stroke-width="3"/>
+<text x="80" y="101" font-size="14">avg_ms (ms)</text><text x="80" y="356" font-size="14">1</text><text x="820" y="356" font-size="14">25</text><text x="345" y="382" font-size="14">Reporting window / sample index</text></g></svg>

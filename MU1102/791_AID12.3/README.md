@@ -1,4 +1,4 @@
-# MU1102 and 791 version 2.0
+# MU1102 and AID 12.3 version 2.0
 
 Exact firmware gate: 55915411 bytes. Output: 800×480.
 

@@ -25,7 +25,7 @@
 - 上拨一格：地图放大。
 - 下拨一格：地图缩小。
 - 滑轮按压：不映射。
-- 仍仅支持 MU1440 Škoda 的 790 仪表组合。其他固件的控制 JAR 不变。
+- 仍仅支持 MU1440 Škoda 的 AID 10.5 仪表组合。其他固件的控制 JAR 不变。
 
 手机地图 App 必须支持缩放指令。高德地图已验证可用，百度地图不支持该操作。
 
@@ -35,7 +35,7 @@
 
 本次通过五个组合的离线首次安装、重复安装、原厂恢复、已有/缺失/损坏导航补丁和错误固件停止测试，以及滑轮信号回放测试。各组合仍需独立实车验证；离线测试不代表已完成本次更新的所有实车测试。
 
-30 fps 显示基线、790 原有导航位置、视频传输、工具箱入口、免费开源范围和独立付费支持内容均未修改。
+30 fps 显示基线、AID 10.5 原有导航位置、视频传输、工具箱入口、免费开源范围和独立付费支持内容均未修改。
 
 ## English release notes
 
@@ -58,7 +58,7 @@ This patch removes the external-navigation map shutdown restriction. It does not
 - One upward detent: zoom in.
 - One downward detent: zoom out.
 - Roller press: not mapped.
-- MU1440 Skoda remains restricted to the 790 cluster profile. Other firmware control JARs are unchanged.
+- MU1440 Skoda remains restricted to the AID 10.5 cluster profile. Other firmware control JARs are unchanged.
 
 The phone map app must accept zoom commands. Amap was verified; Baidu Maps does not support this operation.
 
@@ -68,7 +68,7 @@ Entry points are unchanged. Perform a full reboot after a successful MQB install
 
 Offline tests cover all five profiles: first install, reinstall, factory restoration, existing/missing/damaged navigation patches and wrong-firmware stops. Roller event replay tests also passed. Each profile still needs independent live validation; offline results are not a claim that every combination has been tested on a vehicle for this release.
 
-The 30 fps display baseline, existing 790 navigation position, video transport, toolbox entry points, free open-source scope and separate paid-support contents are unchanged.
+The 30 fps display baseline, existing AID 10.5 navigation position, video transport, toolbox entry points, free open-source scope and separate paid-support contents are unchanged.
 
 ## Third party component notice
 

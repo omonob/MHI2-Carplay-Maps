@@ -4,8 +4,8 @@ Exact firmware identity: `/ifs/lsd.jxe` = **55,915,411 bytes**.
 
 | Cluster | Profile files | Display baseline |
 | --- | --- | --- |
-| 791 AID 12.3 | [`791_AID12.3`](./791_AID12.3/) | 40 fps declaration, navigation centered |
-| 790 AID 10.5 | [`790_AID10.5`](./790_AID10.5/) | 40 fps, non-navigation centered, navigation right |
+| AID 12.3 | [AID 12.3 profile](./791_AID12.3/) | 40 fps declaration, navigation centered |
+| AID 10.5 | [AID 10.5 profile](./790_AID10.5/) | 60 fps declaration; selectable navigation cards |
 
 These directories contain only the CarPlay Maps VC project files. They are not complete MQB or M.I.B. Toolbox distributions.
 
