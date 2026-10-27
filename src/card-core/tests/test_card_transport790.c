@@ -19,8 +19,8 @@ static int32_t card_transport_test_send(void *session,const void *request,void (
   check(params->count==2);check(strstr(string(params,"url"),"maps:/car/instrumentcluster")!=NULL);scene_sends++;
  }else if(!strcmp(type,"updateViewArea")){
   const Obj *adj=lookup(params,"adjacentViewAreas");j=(int)number(params,"viewAreaIndex");
-  check(j>=0&&j<4&&number(params,"animationDurationMillis")==0&&params->count==4);
-  check(adj&&adj->count==3);for(i=0;i<3;i++)check(adj->items[i]->number>=0&&adj->items[i]->number<4&&adj->items[i]->number!=j);
+  check(j>=0&&j<5&&number(params,"animationDurationMillis")==0&&params->count==4);
+  check(adj&&adj->count==4);for(i=0;i<4;i++)check(adj->items[i]->number>=0&&adj->items[i]->number<5&&adj->items[i]->number!=j);
   view_sends++;
  }else{check(!strcmp(type,"forceKeyFrame")&&params->count==1);idr_sends++;}
  pending_request=(Obj *)keep(request);pending_callback=cb;pending_context=context;pending=1;wire_sends++;return 0;
@@ -74,7 +74,7 @@ int main(void){
  set_position(root,3,generation++);card_runtime_poll();check(pending);ack(-7);n=wire_sends;
  for(i=0;i<20;i++){card_runtime_poll();}
  check(wire_sends==n&&g_card_policy.blocked);
- set_position(root,3,generation++);drain(3,0);
+ set_position(root,3,generation++);drain(3,4);
  /* Immediate dispatch failure also leaves no leaked context/wire lock. */
  set_position(root,0,generation++);fail_send=1;card_runtime_poll();fail_send=0;
  check(!pending&&g_card_policy.blocked&&g_card_wire_active==0);set_position(root,0,generation++);drain(0,3);

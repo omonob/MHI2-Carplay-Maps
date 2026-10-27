@@ -4,7 +4,7 @@ Free open-source CarPlay maps and screen mirroring for Volkswagen and Škoda vir
 
 大众与斯柯达 MHI2 的免费开源 CarPlay 地图和屏幕镜像项目。开源软件本身及 GPLv3 授予的权利不收费。
 
-[Downloads 下载](https://github.com/omonob/MHI2-Carplay-Maps/releases/latest) · [2.0 release notes 中英文更新说明](releases/toolbox-plaintext-v2.0.0.md) · [GPLv3](LICENSE)
+[Downloads 下载](https://github.com/omonob/MHI2-Carplay-Maps/releases/latest) · [2.0.1 release notes 中英文更新说明](releases/toolbox-plaintext-v2.0.1.md) · [GPLv3](LICENSE)
 
 [开发进度、图片与帧率／延迟数据](docs/development/2026-10-28/README.md) · [Development report, images and measurements](docs/development/2026-10-28/README_EN.md)
 
@@ -31,7 +31,9 @@ App-Connect 设置里增加独立的“虚拟座舱设置”入口，保留原�
 | MU1367 | 55,840,541 bytes | 800×480 | 1010×376 |
 | MU1440 Škoda | 55,840,933 bytes | 不支持 | 1010×376，保留滑轮方向 |
 
-AID 10.5 卡片核心沿用已上机黄金基线，Waze 卡片仍有已知布局问题。AID 12.3 使用实验安全区 `(220,65,360,348)`，底边保持 413；该最终参数尚待实车确认，不能当作已通过实车验证的黄金版。完整 2.0 包并未在所有车型上验证。
+AID 10.5 保留已上机黄金基线的左／右／中间卡片安全区，Waze 卡片仍有已知布局问题。2.0.1 另补 iPhone 17 Pro Max 的纯地图居中声明：卡片关闭时，普通状态为 `(202,16,606,344)`，CarPlay 取得导航所有权后为 `(42,16,606,344)`；输出仍是 1010×376。新接入的导航所有权事件通路经过离线测试，尚待手机上机确认；参数不保证适合所有手机。
+
+AID 12.3 使用实验安全区 `(220,65,360,348)`，底边保持 413；该最终参数尚待实车确认，不能当作已通过实车验证的黄金版。其原生核心在 2.0.1 中未变。完整包并未在所有车型上验证。
 
 AID 12.3 保留 40 fps 协商声明与每 5 帧请求一次 IDR。AID 10.5 卡片基线声明上限为 60 fps；AID 10.5 CP 镜像模式将原厂 10 fps 编码请求改为 30 fps。协商／请求值不等于所有手机和应用的实测显示帧率。
 
@@ -67,7 +69,9 @@ AID 10.5 has Center, Left, Right and Off card choices and a fixed 1010×376 outp
 
 MU1102 and MU1367 support both cluster profiles. MU1440 Škoda supports AID 10.5 only. Exact firmware sizes are listed above; unknown profiles are rejected before factory files are modified.
 
-The AID 10.5 native card core is byte-identical to the on-unit golden baseline; Waze retains a known card-layout issue. The final AID 12.3 safe area `(220,65,360,348)` is an offline-tested experimental parameter, not a vehicle-validated golden release. The complete 2.0 package has not been verified on every vehicle.
+The original on-unit AID 10.5 Left, Right and Center card rectangles are retained; Waze still has a known card-layout issue. Version 2.0.1 adds a separate iPhone 17 Pro Max pure-map view when Navigation Card is Off: `(202,16,606,344)` normally and `(42,16,606,344)` when CarPlay owns navigation. Output stays 1010×376. The newly integrated ownership-event path is offline-tested but still needs a phone-connected test; these are not universal phone parameters.
+
+The final AID 12.3 safe area `(220,65,360,348)` is an offline-tested experimental parameter, not a vehicle-validated golden release. Both AID 12.3 native cores are unchanged in 2.0.1. The complete package has not been verified on every vehicle.
 
 AID 12.3 retains a 40 fps stream declaration and an IDR request every five frames. The AID 10.5 card baseline declares a 60 fps ceiling. Only in AID 10.5 CP-mirror mode, the original 10 fps encoder request becomes 30 fps. These are not universal measured-FPS guarantees.
 
@@ -87,7 +91,7 @@ Source is under `src/card-core`, `src/vc-menu`, `src/vc-runtime`, `src/toolbox` 
 
 1. Run `tools/Build-V2Menu.ps1` with `-Mu1102Jar`, `-Mu1367Jar`, `-Mu1440Jar` and a fresh `-BuildRoot`. It compiles against each firmware API and runs host persistence, policy, locale and profile tests.
 2. Run `tools/Build-V2Native.sh` inside a compatible locally built QNX 6.5 ARMv7 GNU toolchain container with this repository mounted at `/src`. It builds five native cores, two fixed-resolution renderers and the shared runtime, and runs the actual declaration/async-transport tests under sanitizers.
-3. Run `tools/Stage-V2Profiles.ps1` with `-MenuBuild` and `-NativeBuild`, then `tools/Build-MQBRelease.ps1` with the unchanged published v1.2.2 full MQB ZIP and a fresh `-BuildRoot`.
+3. Run `tools/Stage-V2Profiles.ps1` with `-MenuBuild` and `-NativeBuild`, then `tools/Build-MQBRelease.ps1 -Version 2.0.1` with the unchanged published v2.0.0 (or v1.2.2) full MQB ZIP and a fresh `-BuildRoot`. For a limited AID 10.5 rebuild, `tools/Build-AID10CenterPatch.sh` builds the three cores and verifies that both AID 12.3 cores remain byte-identical.
 4. On a Linux host run `python3 tests/test_v2_install.py` and `python3 tests/test_navigation_repair.py` for fixture-only install, repeat, repair, rollback and restore tests. These scripts do not connect to a vehicle.
 
-[Full 2.0 release notes](releases/toolbox-plaintext-v2.0.0.md) include the exact feature and validation boundaries. The project remains licensed under [GPLv3](LICENSE).
+[2.0.1 centering notes](releases/toolbox-plaintext-v2.0.1.md) and the [original 2.0 feature notes](releases/toolbox-plaintext-v2.0.0.md) give the validation boundaries. The project remains licensed under [GPLv3](LICENSE).

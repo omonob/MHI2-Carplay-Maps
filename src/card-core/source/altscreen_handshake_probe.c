@@ -1877,6 +1877,12 @@ static int read_navigation_route_state(int *route_state)
     size_t length;
 
     if (!route_state) return 0;
+#ifdef ALTSCREEN_RUNTIME_CARD_POSITION
+#ifndef CPMAP_CARD_PROFILE_791
+    if(!getenv("CARPLAY_NAVIGATION_STATE_PATH")||!getenv("CARPLAY_NAVIGATION_STATE_PATH")[0])
+        return cpmap_read_navigation_ownership("/ramdisk/cpmap-navigation-owner.state",(long)getpid(),route_state);
+#endif
+#endif
     file = fopen(viewarea_navigation_state_path(), "r");
     if (!file) return 0;
     length = fread(body, 1, sizeof(body) - 1, file);

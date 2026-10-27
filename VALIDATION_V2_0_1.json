@@ -1,0 +1,39 @@
+{
+  "version": "2.0.1",
+  "date": "2026-10-28",
+  "base_validation": "VALIDATION_V2.json",
+  "firmware_menu_api_builds": ["MU1102", "MU1367", "MU1440"],
+  "locales": 31,
+  "java_class_major": 46,
+  "aid10_5": {
+    "core_sha256": "97ccb829f996b74305099ca54e6f4a693a17381b391d170c1227f44e49ff0769",
+    "phone_baseline": "iPhone 17 Pro Max",
+    "encoded_size": [1010, 376],
+    "pure_map_card_off_idle": [202, 16, 606, 344],
+    "pure_map_card_off_navigation_owned_by_carplay": [42, 16, 606, 344],
+    "original_left_right_center_rectangles_unchanged": true,
+    "view_count": 5,
+    "async_transport_fixture_checks": 405,
+    "cf_fixture_objects_leaked": 0,
+    "asan_ubsan": "pass",
+    "new_ownership_path_phone_connected_test": "pending",
+    "universal_phone_geometry": false,
+    "known_waze_card_issue": "unchanged"
+  },
+  "ownership_observer": {
+    "reads": "OEM CarPlay navigation ownership bit only",
+    "writes": "CRC-checked RAM-only receiver-PID-bound boolean",
+    "private_information_module_dependency_required": false,
+    "navigation_or_music_metadata_mapping_added": false,
+    "java_checks_per_firmware": 15,
+    "java_c_valid_flags": 2,
+    "java_c_wrong_owner_rejected": 2,
+    "java_c_damaged_flags_rejected": 10,
+    "original_oem_members_and_instructions_scope_test": "pass for all three firmware APIs"
+  },
+  "aid12_3_native_cores": "both byte-identical to 2.0.0",
+  "unrelated_bridge_supervisor_mirror_and_controls": "byte-identical to 2.0.0",
+  "installer_scope": "all five profiles clean, repeat, repair, rollback, restore and 2.0.0 upgrade fixtures passed",
+  "archive_scope": "exactly 11 entries changed; all other entries byte-identical to 2.0.0",
+  "complete_public_package_live_tested_on_all_profiles": false
+}

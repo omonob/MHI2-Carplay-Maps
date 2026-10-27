@@ -11,6 +11,28 @@ public final class BuildNativeHook {
     static final String TARGET = "de/vw/mib/view/internal/AbstractViewHandler";
     static final String BRIDGE = "org/omonob/cpmap/ui/IndependentMenuViewBridge";
     static int hooks;
+    static byte[] navigationOwnershipHook(byte[] input){
+        ClassWriter writer=new ClassWriter(ClassWriter.COMPUTE_MAXS);final int[] count={0,0};
+        new ClassReader(input).accept(new ClassVisitor(Opcodes.ASM8,writer){
+            public MethodVisitor visitMethod(int access,String name,String desc,String sig,String[] exceptions){
+                MethodVisitor next=super.visitMethod(access,name,desc,sig,exceptions);
+                final boolean mode="handledsiCarPlayupdateMode".equals(name)&&"([Lorg/dsi/ifc/carplay/Resource;[Lorg/dsi/ifc/carplay/AppState;)V".equals(desc);
+                final boolean device="handledsiCarPlayUpdateDeviceInfo".equals(name)&&"()V".equals(desc);
+                if(!mode&&!device)return next;count[mode?0:1]++;
+                return new MethodVisitor(Opcodes.ASM8,next){
+                    public void visitInsn(int opcode){
+                        if(opcode==Opcodes.RETURN){
+                            if(mode)super.visitVarInsn(Opcodes.ALOAD,2);
+                            super.visitMethodInsn(Opcodes.INVOKESTATIC,"org/omonob/cpmap/ui/CarPlayNavigationOwnership",mode?"observe":"deviceChanged",mode?"([Lorg/dsi/ifc/carplay/AppState;)V":"()V",false);
+                        }
+                        super.visitInsn(opcode);
+                    }
+                };
+            }
+        },ClassReader.SKIP_FRAMES);
+        if(count[0]!=1||count[1]!=1)throw new IllegalStateException("Exact CarPlay ownership callback ABI not found");
+        return writer.toByteArray();
+    }
 
     static byte[] patch(byte[] stock) {
         ClassReader reader = new ClassReader(stock);
@@ -75,6 +97,8 @@ public final class BuildNativeHook {
         try (JarFile source = new JarFile(baseline.toFile()); JarOutputStream jar = new JarOutputStream(Files.newOutputStream(staged))) {
             byte[] stock = source.getInputStream(source.getJarEntry(TARGET + ".class")).readAllBytes();
             add(jar, TARGET + ".class", patch(stock));
+            String ownership="de/vw/mib/asl/internal/carplay/target/DSIHandler.class";
+            add(jar,ownership,navigationOwnershipHook(source.getInputStream(source.getJarEntry(ownership)).readAllBytes()));
             try (var files = Files.walk(classes)) {
                 for (Path file : files.filter(p -> p.toString().endsWith(".class")).sorted().toList()) {
                     String name = classes.relativize(file).toString().replace('\\', '/');

@@ -12,8 +12,9 @@ $module=Join-Path $repo 'src/vc-menu'
 if(Test-Path -LiteralPath $BuildRoot){throw 'Use a fresh build directory'}
 New-Item -ItemType Directory -Path $BuildRoot | Out-Null
 $tools=Join-Path $BuildRoot 'tools';New-Item -ItemType Directory -Path $tools | Out-Null
-$toolSources=@('BuildNativeHook.java','BuildControlHook.java','BuildMirrorRateTest.java') | ForEach-Object {Join-Path $module ('tools/'+$_)}
-& "$Jdk\javac.exe" --add-exports java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED -encoding UTF-8 -d $tools @toolSources
+$toolSources=@('BuildNativeHook.java','BuildControlHook.java','BuildMirrorRateTest.java','TestNavigationOwnershipHook.java') | ForEach-Object {Join-Path $module ('tools/'+$_)}
+$asmExports=@('--add-exports','java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED','--add-exports','java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED','--add-exports','java.base/jdk.internal.org.objectweb.asm.util=ALL-UNNAMED')
+& "$Jdk\javac.exe" @asmExports -encoding UTF-8 -d $tools @toolSources
 if($LASTEXITCODE){throw 'Build tool compilation failed'}
 $sources=@(Get-ChildItem -LiteralPath (Join-Path $module 'src') -Filter '*.java' -Recurse | Select-Object -ExpandProperty FullName)
 $profiles=@{MU1102=$Mu1102Jar;MU1367=$Mu1367Jar;MU1440=$Mu1440Jar}
@@ -27,6 +28,8 @@ foreach($mu in @('MU1102','MU1367','MU1440')){
  $menu=Join-Path $dir 'VCMenu.jar'
  & "$Jdk\java.exe" --add-exports java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED -cp $tools BuildNativeHook $stock $classes $menu
  if($LASTEXITCODE){throw ('Native lifecycle hook failed '+$mu)}
+ & "$Jdk\java.exe" @asmExports -cp $tools TestNavigationOwnershipHook $stock $menu
+ if($LASTEXITCODE){throw ('Original CarPlay callback scope changed '+$mu)}
  $rate=Join-Path $dir 'VCMirrorRate.jar'
  & "$Jdk\java.exe" --add-exports java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED -cp $tools BuildMirrorRateTest $stock $classes $rate (Join-Path $dir 'ChangeDataRateSequence.original.class')
  if($LASTEXITCODE){throw ('Mirror cadence ABI failed '+$mu)}
@@ -37,7 +40,7 @@ foreach($mu in @('MU1102','MU1367','MU1440')){
  if((Get-FileHash -LiteralPath $control).Hash -ne $controlHash){throw 'Original published controls baseline mismatch'}
  & "$Jdk\java.exe" --add-exports java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED -cp $tools BuildControlHook $control (Join-Path $dir 'CarPlayClusterControls.jar') $menu
  if($LASTEXITCODE){throw ('Wheel canvas routing failed '+$mu)}
- $testNames=@('CardPositionSettingsTest','Card791OptionsTest','MapSwitchSettingsTest','ProjectionSettingsTest','WirelessCarPlaySettingsTest','ProjectionPolicyTest','FeatureFlowTest','PublicProfileTest')
+ $testNames=@('CardPositionSettingsTest','Card791OptionsTest','MapSwitchSettingsTest','ProjectionSettingsTest','WirelessCarPlaySettingsTest','ProjectionPolicyTest','FeatureFlowTest','PublicProfileTest','CarPlayNavigationOwnershipTest')
  $testSources=$testNames | ForEach-Object {Join-Path $module ('tests/'+$_+'.java')}
  foreach($cli in @('CardStateCli','ProjectionStateCli','MapSwitchStateCli','WirelessStateCli')){$testSources+=Join-Path $module ('tests/'+$cli+'.java')}
  & "$Jdk\javac.exe" -encoding UTF-8 -source 7 -target 7 -Xlint:-options -cp ($menu+';'+$stock) -d $tests @testSources
