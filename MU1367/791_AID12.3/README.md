@@ -1,10 +1,13 @@
-# MU1367 / 791 AID 12.3
+# MU1367 and 791 version 2.0
 
-- Firmware gate: `/ifs/lsd.jxe` = **55,840,541 bytes**
-- Display: **40 fps declaration, navigation centered**
-- Steering controls: short press zoom; long press map switch
-- Profile core: `payload/profiles/MU1367/791/core.so`
+Exact firmware gate: 55840541 bytes. Output: 800×480.
 
-This is a standalone CarPlay Maps VC file set, not a complete toolbox. From this directory on the MMX shell, run `/bin/ksh ./run-install.sh`. The installer performs the exact firmware/profile check again and does not reboot automatically.
+Navigation card: On, Off. Experimental safe area `(220,65,360,348)`, bottom413; final vehicle validation remains pending.
 
-这是独立项目文件，不是完整工具箱。在 MMX 中进入本目录后运行 `/bin/ksh ./run-install.sh`；安装器会再次执行精确固件校验，且不会自动重启。
+This standalone file set is not the full Toolbox. Ordinary users should download the full MQB ZIP from Releases. On MMX, developers may run `/bin/ksh ./run-install.sh` from this directory. Back up the unit and disconnect CarPlay first. A complete reboot is required after `CPMAP_INSTALL_OK`; the script does not reboot automatically.
+
+VC maps, CP mirroring, persistent native settings and navigation cards are included. Wireless CarPlay is a saved test interface only, off by default; no wireless service is bundled. Android Auto and CarLife engines, music metadata, album art and startup animations are not included.
+
+这是独立项目文件，不是完整工具箱。请先备份本机并断开 CarPlay；安装成功后完整重启。菜单设置可记忆，无线 CarPlay 只是默认关闭的测试接口，尚未发布无线连接服务。
+
+[Full bilingual instructions](../../README.md) · [2.0 release notes](../../releases/toolbox-plaintext-v2.0.0.md)

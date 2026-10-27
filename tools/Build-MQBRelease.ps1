@@ -1,39 +1,36 @@
 [CmdletBinding()]
-param(
-    [Parameter(Mandatory=$true)][string]$PreviousArchive,
-    [Parameter(Mandatory=$true)][string]$BuildRoot
-)
+param([Parameter(Mandatory=$true)][string]$PreviousArchive,[Parameter(Mandatory=$true)][string]$BuildRoot)
 Set-StrictMode -Version Latest
-$ErrorActionPreference = 'Stop'
+$ErrorActionPreference='Stop'
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 Add-Type -AssemblyName System.IO.Compression
-$repo = Split-Path -Parent $PSScriptRoot
-$previous = [IO.Path]::GetFullPath($PreviousArchive)
-$build = [IO.Path]::GetFullPath($BuildRoot)
-$name = 'VW_SKODA_ALL_CarPlay_Maps_VC_FULL_MQB_Toolbox_V4.2A_v1.2.2.zip'
-if (Test-Path -LiteralPath $build) { throw 'BuildRoot must be a new directory.' }
-if ((Get-FileHash -LiteralPath $previous -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'f72d14a82518c1a27754c842d362fc29c9df1e8c355ed4b6acd4e8bb73b0dd21') {
-    throw 'Expected the unchanged published v1.2.1 MQB archive.'
-}
-$checker = Join-Path $repo 'src/toolbox/build/cpmap-nav-check'
-if (!(Test-Path -LiteralPath $checker)) { throw 'Run tools/Build-NavChecker.ps1 first.' }
-$assets = Join-Path $build 'release-assets'
-New-Item -ItemType Directory -Path $assets | Out-Null
-$output = Join-Path $assets $name
+$repo=Split-Path -Parent $PSScriptRoot
+$previous=[IO.Path]::GetFullPath($PreviousArchive)
+$build=[IO.Path]::GetFullPath($BuildRoot)
+if(Test-Path -LiteralPath $build){throw 'BuildRoot must be new'}
+if((Get-FileHash -LiteralPath $previous).Hash -ne '06955ADE05E461B26EC2FDB78631378B690FEFB64B1FFA672B802CAF55061AB5'){throw 'Expected published v1.2.2 full MQB base'}
+$assets=Join-Path $build 'release-assets';New-Item -ItemType Directory -Path $assets|Out-Null
+$name='VW_SKODA_ALL_CarPlay_Maps_VC_FULL_MQB_Toolbox_V4.2A_v2.0.0.zip'
+$output=Join-Path $assets $name
 Copy-Item -LiteralPath $previous -Destination $output
-$archive = [IO.Compression.ZipFile]::Open($output, [IO.Compression.ZipArchiveMode]::Update)
-try {
-    $entryName = 'Custom/carplay_maps_vc/payload/common/install-carplay-maps.sh'
-    $entry = $archive.GetEntry($entryName)
-    if (!$entry) { throw 'Expected MQB installer path is missing.' }
-    $entry.Delete()
-    [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, (Join-Path $repo 'src\toolbox\install-carplay-maps.sh'), $entryName, [IO.Compression.CompressionLevel]::Optimal) | Out-Null
-    $checkerEntry = 'Custom/carplay_maps_vc/payload/common/cpmap-nav-check'
-    if ($archive.GetEntry($checkerEntry)) { throw 'Baseline unexpectedly already contains the new checker.' }
-    [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, $checker, $checkerEntry, [IO.Compression.CompressionLevel]::Optimal) | Out-Null
-} finally { $archive.Dispose() }
-$hash = (Get-FileHash -LiteralPath $output -Algorithm SHA256).Hash.ToLowerInvariant()
-[IO.File]::WriteAllText((Join-Path $assets 'FULL_TOOLBOX_SHA256.txt'), "$hash  $name`n", [Text.UTF8Encoding]::new($false))
-Copy-Item -LiteralPath (Join-Path $repo 'releases\toolbox-plaintext-v1.2.2.md') -Destination (Join-Path $assets 'GITHUB_RELEASE_NOTES.md')
-if (@(Get-ChildItem -LiteralPath $assets -File).Count -ne 3) { throw 'MQB release must contain exactly one ZIP, one checksum and one notes file.' }
-Write-Host "MQB_ONLY_RELEASE_BUILD_OK $assets"
+$zip=[IO.Compression.ZipFile]::Open($output,[IO.Compression.ZipArchiveMode]::Update)
+function Replace-Entry([string]$entry,[string]$file){
+ $old=$zip.GetEntry($entry);if($old){$old.Delete()}
+ [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip,$file,$entry,[IO.Compression.CompressionLevel]::Optimal)|Out-Null
+}
+try{
+ $common=Join-Path $repo 'MU1102/791_AID12.3/payload/common'
+ foreach($file in Get-ChildItem -LiteralPath $common -File){Replace-Entry ('Custom/carplay_maps_vc/payload/common/'+$file.Name) $file.FullName}
+ foreach($profile in @(@('MU1102','791'),@('MU1102','790'),@('MU1367','791'),@('MU1367','790'),@('MU1440','790'))){
+  $mu=$profile[0];$cluster=$profile[1];$brand=if($mu -eq 'MU1440'){'MU1440_SKODA'}else{$mu};$cd=if($cluster -eq '790'){'790_AID10.5'}else{'791_AID12.3'}
+  $specific=Join-Path $repo ($brand+'/'+$cd+'/payload/profiles/'+$mu+'/'+$cluster)
+  foreach($file in Get-ChildItem -LiteralPath $specific -File){Replace-Entry ('Custom/carplay_maps_vc/payload/profiles/'+$mu+'/'+$cluster+'/'+$file.Name) $file.FullName}
+ }
+ Replace-Entry 'Toolbox/scripts/cpmap_restore_core.sh' (Join-Path $repo 'src/toolbox/restore-carplay-maps.sh')
+ Replace-Entry 'Toolbox/GEM/carplay-maps-vc.esd' (Join-Path $repo 'src/toolbox/carplay-maps-vc.esd')
+ Replace-Entry 'CARPLAY_MAPS_VC_README.md' (Join-Path $repo 'releases/toolbox-plaintext-v2.0.0.md')
+}finally{$zip.Dispose()}
+$hash=(Get-FileHash -LiteralPath $output).Hash.ToLowerInvariant()
+[IO.File]::WriteAllText((Join-Path $assets 'FULL_TOOLBOX_SHA256.txt'),"$hash  $name`n",[Text.UTF8Encoding]::new($false))
+Copy-Item -LiteralPath (Join-Path $repo 'releases/toolbox-plaintext-v2.0.0.md') -Destination (Join-Path $assets 'GITHUB_RELEASE_NOTES.md')
+Write-Output ('V2_FULL_MQB_RELEASE_BUILT '+$assets)

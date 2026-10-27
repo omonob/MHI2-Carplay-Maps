@@ -58,6 +58,15 @@ if [ -s "$ROOT/rollback/CarPlayNavigationPatch.jar" ]; then
 elif [ -e "$ROOT/rollback/NAV_JAR_ABSENT" ]; then
     rm -f "$NAV_JAR"
 fi
+for name in VCMenu.jar VCMirrorRate.jar; do
+    if [ -e "$ROOT/rollback/$name" ]; then
+        cp "$ROOT/rollback/$name" "$JAR.restore" || exit 1
+        chmod 644 "$JAR.restore"
+        mv "$JAR.restore" "$APP/eso/hmi/lsd/jars/$name" || exit 1
+    elif [ -e "$ROOT/rollback/$name.absent" ]; then
+        rm -f "$APP/eso/hmi/lsd/jars/$name"
+    fi
+done
 
 rm -rf "$ROOT"
 sync 2>/dev/null || true

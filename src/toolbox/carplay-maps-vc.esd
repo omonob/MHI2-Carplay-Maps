@@ -1,0 +1,40 @@
+###########################################################################
+# CarPlay Maps VC 2.0 - free open-source project by omonob
+###########################################################################
+screen carplay-maps-vc Customization
+
+keyValue
+    value String sys 0x00000000 0
+    label "CarPlay Maps VC 2.0"
+    poll 0
+
+keyValue
+    value String sys 0x00000000 0
+    label "Free open-source project by omonob"
+    poll 0
+
+keyValue
+    value String sys 0x00000000 0
+    label "VC maps, mirroring and navigation cards"
+    poll 0
+
+keyValue
+    value String sys 0x00000000 0
+    label "Wireless CarPlay: test interface only, service not released"
+    poll 0
+
+script
+    value sys 1 0x0100 "/eso/hmi/engdefs/scripts/mqb/cpmap_install_791.sh"
+    label "Install 791 AID 12.3 (AUTO MU)"
+
+script
+    value sys 1 0x0100 "/eso/hmi/engdefs/scripts/mqb/cpmap_install_790.sh"
+    label "Install 790 AID 10.5 (AUTO MU)"
+
+script
+    value sys 1 0x0100 "/eso/hmi/engdefs/scripts/mqb/cpmap_status.sh"
+    label "Show CarPlay Maps VC status"
+
+script
+    value sys 1 0x0100 "/eso/hmi/engdefs/scripts/mqb/cpmap_restore.sh"
+    label "Restore factory files"

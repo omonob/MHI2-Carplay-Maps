@@ -1,6 +1,14 @@
 *.sh text eol=lf
 *.md text eol=lf
 *.txt text eol=lf
+*.java text eol=lf
+*.c text eol=lf
+*.h text eol=lf
+*.py text eol=lf
+*.ps1 text eol=lf
+*.json text eol=lf
+*.esd text eol=lf
+**/payload/common/cpvc-mirror-canvas-* binary
 *.jar binary
 **/payload/common/cpmap-nav-check binary
 *.so binary

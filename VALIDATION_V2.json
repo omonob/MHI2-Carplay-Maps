@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "date": "2026-10-28",
+  "firmware_menu_api_builds": ["MU1102", "MU1367", "MU1440"],
+  "installer_profiles": ["MU1102/791", "MU1102/790", "MU1367/791", "MU1367/790", "MU1440/790"],
+  "locales": 31,
+  "java_class_major": 46,
+  "host_tests_per_firmware": {"card_persistence":286,"card791_options":74,"map_preferences":16,"linked_settings":1562,"wireless_interface":48,"runtime_policy":33,"feature_flow":44},
+  "native790": {"core_sha256":"38e65fe41de6d4209a0fc9784eeed1404b13288090d82d3cfd099168a76e2887","matches_live_golden":true,"async_transport_checks":394,"encoded_size":[1010,376],"positions":["center","left","right","off"],"known_app_issue":"Waze card layout"},
+  "native791": {"core_sha256":"b3d28142eac16d220e639bd0d8056e595e4d4bbf90a9d63d2e3c402c62b870b0","final_safe_area":[220,65,360,348],"bottom":413,"encoded_size":[800,480],"async_transport_checks":278,"positions":["on","off"],"final_tuple_live_tested":false},
+  "native_sanitizers":"ASan and UBSan passed; no leaked CF fixture objects",
+  "installation_fixtures":"all five profiles passed clean/repeat/repair/restore and three partial-commit rollback cases",
+  "published_v1_2_2_upgrade":"all five profiles upgrade and restore the first pre-v1 factory files",
+  "separate_jvm_reload":"card and wireless preferences passed on all three firmware builds",
+  "real_control_class_tests":"MU1102 and MU1367 keys; MU1440 roller; map/canvas routing passed without mirror commands leaking to phone-map port",
+  "wireless_service":"not included; persisted test interface only; default off",
+  "aa_and_carlife_engines":"not included; unavailable UI choices disabled",
+  "complete_public_package_live_tested_on_all_profiles":false,
+  "new_vm_render":"not run; shared VM occupied by a separate Audi experiment; not interrupted",
+  "font_scope":"31 translated locale tables; actual glyph coverage uses firmware fonts; no proprietary font redistribution"
+}
