@@ -4,3 +4,6 @@ release-assets/
 __pycache__/
 build-v2-native/
 build-aid-center/
+build-g11-native*/
+build-g11-menu*/
+build-g11-navigation*/

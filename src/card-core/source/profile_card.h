@@ -17,6 +17,14 @@
 #define ALTSCREEN_VIEW_ORIGIN_X 0
 #define ALTSCREEN_VIEW_ORIGIN_Y 0
 #define VW790_CARD_SIDE 0
+/* Exact stock libairplay layouts, audited at the screen-key derivation call.
+ * MU1433 uses the same 0x1c0 field as P0627, not the G13 default.
+ * SEAT MU1447 remains 0x1c8 despite also being a G11 head-unit profile. */
+#if CPMAP_FIRMWARE == 1433
+#define MHI2_SESSION_AES_KEY_OFFSET 448U
+#elif CPMAP_FIRMWARE == 1447
+#define MHI2_SESSION_AES_KEY_OFFSET 456U
+#endif
 #if CPMAP_CLUSTER == 791
 #define CPMAP_CARD_PROFILE_791 1
 #define ALTSCREEN_DISPLAY_WIDTH 800
@@ -48,9 +56,9 @@
 #else
 #error Explicit790or791profileRequired
 #endif
-#if CPMAP_FIRMWARE != 1102 && CPMAP_FIRMWARE != 1367 && CPMAP_FIRMWARE != 1440
+#if CPMAP_FIRMWARE != 1102 && CPMAP_FIRMWARE != 1367 && CPMAP_FIRMWARE != 1440 && CPMAP_FIRMWARE != 1433 && CPMAP_FIRMWARE != 1447
 #error UnsupportedFirmware
 #endif
-#if CPMAP_FIRMWARE == 1440 && CPMAP_CLUSTER != 790
-#error Skoda1440Requires790
+#if (CPMAP_FIRMWARE == 1440 || CPMAP_FIRMWARE == 1433 || CPMAP_FIRMWARE == 1447) && CPMAP_CLUSTER != 790
+#error SkodaSeatRequiresAID10_5
 #endif

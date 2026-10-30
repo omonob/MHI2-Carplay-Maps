@@ -4,7 +4,7 @@ REAL="$ROOT/stock_first/dio_manager.real"
 LOG=/ramdisk/carplaymaps-launcher.log
 if test ! -x "$REAL" || test ! -r "$ROOT/core.so";then exit 127;fi
 case "$(cat "$ROOT/PROFILE" 2>/dev/null)" in
- MU1102/790|MU1367/790|MU1440/790) CPVC_CLUSTER_PROFILE=790 ;;
+ MU1102/790|MU1367/790|MU1440/790|MU1433/790|MU1447/790) CPVC_CLUSTER_PROFILE=790 ;;
  MU1102/791|MU1367/791) CPVC_CLUSTER_PROFILE=791 ;;
  *) echo profile-invalid > "$LOG";exec "$REAL" "$@" ;;
 esac

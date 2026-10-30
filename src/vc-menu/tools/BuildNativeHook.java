@@ -36,6 +36,22 @@ public final class BuildNativeHook {
 
     static byte[] patch(byte[] stock) {
         ClassReader reader = new ClassReader(stock);
+        // G11 MU1433 initializes the widget graph in init(boolean), whereas
+        // later trains construct it in setup(). In BOTH cases attach before
+        // View.init: appending after it produces visible, uninitialized widgets
+        // with no native touch controller. Never initialize the stock tree twice.
+        final int[] initializers = {0,0};
+        reader.accept(new ClassVisitor(Opcodes.ASM8) {
+            public MethodVisitor visitMethod(int access,String name,String desc,String sig,String[] ex) {
+                if ("setup".equals(name) && "()V".equals(desc)) initializers[0]++;
+                if ("init".equals(name) && "(Z)V".equals(desc)) initializers[1]++;
+                return null;
+            }
+        },ClassReader.SKIP_CODE|ClassReader.SKIP_DEBUG|ClassReader.SKIP_FRAMES);
+        if (initializers[0] != 1 && !(initializers[0] == 0 && initializers[1] == 1))
+            throw new IllegalStateException("Unknown or ambiguous widget initialization ABI");
+        final boolean legacyInit=initializers[0]==0;
+        hooks=0;
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         reader.accept(new ClassVisitor(Opcodes.ASM8, writer) {
             public void visit(int version, int access, String name, String signature, String parent, String[] interfaces) {
@@ -44,6 +60,30 @@ public final class BuildNativeHook {
             }
             public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
                 MethodVisitor next = super.visitMethod(access, name, descriptor, signature, exceptions);
+                if (legacyInit && "init".equals(name) && "(Z)V".equals(descriptor)) {
+                    hooks++;
+                    return new MethodVisitor(Opcodes.ASM8,next) {
+                        int gates;
+                        public void visitMethodInsn(int opcode,String owner,String method,String desc,boolean itf) {
+                            if(opcode==Opcodes.INVOKESPECIAL && TARGET.equals(owner)
+                                && "getView".equals(method) && "()Lde/vw/mib/widgets/models/ViewModel;".equals(desc)) {
+                                gates++;
+                                // Local v9 experiment: attach with an empty operand
+                                // stack, before the original getView / View.init pair.
+                                // Restore the original receiver; leave its calls intact.
+                                super.visitInsn(Opcodes.POP);
+                                super.visitVarInsn(Opcodes.ALOAD,0);
+                                super.visitMethodInsn(Opcodes.INVOKESTATIC,BRIDGE,"attach","(L"+TARGET+";)V",false);
+                                super.visitVarInsn(Opcodes.ALOAD,0);
+                            }
+                            super.visitMethodInsn(opcode,owner,method,desc,itf);
+                        }
+                        public void visitEnd() {
+                            if(gates!=1)throw new IllegalStateException("Exact G11 pre-getView gate not found");
+                            super.visitEnd();
+                        }
+                    };
+                }
                 if ("fatalError".equals(name) && "(Ljava/lang/RuntimeException;)V".equals(descriptor)) {
                     return new MethodVisitor(Opcodes.ASM8, next) {
                         public void visitCode() {
@@ -54,7 +94,7 @@ public final class BuildNativeHook {
                         }
                     };
                 }
-                final String call = "setup".equals(name) && "()V".equals(descriptor) ? "attach"
+                final String call = (!legacyInit && "setup".equals(name) && "()V".equals(descriptor)) ? "attach"
                     : "activate".equals(name) && "()V".equals(descriptor) ? "refresh"
                     : "deinit".equals(name) && "()V".equals(descriptor) ? "detach"
                     : "destroy".equals(name) && "()V".equals(descriptor) ? "detach" : null;
@@ -93,10 +133,11 @@ public final class BuildNativeHook {
 
     public static void main(String[] args) throws Exception {
         Path baseline = Path.of(args[0]), classes = Path.of(args[1]), output = Path.of(args[2]);
+        boolean nativeUi=args.length<4 || !"--no-native-ui".equals(args[3]);
         Path staged = Files.createTempFile(output.getParent(), "menu-build-", ".jar.tmp");
         try (JarFile source = new JarFile(baseline.toFile()); JarOutputStream jar = new JarOutputStream(Files.newOutputStream(staged))) {
             byte[] stock = source.getInputStream(source.getJarEntry(TARGET + ".class")).readAllBytes();
-            add(jar, TARGET + ".class", patch(stock));
+            if(nativeUi)add(jar, TARGET + ".class", patch(stock));
             String ownership="de/vw/mib/asl/internal/carplay/target/DSIHandler.class";
             add(jar,ownership,navigationOwnershipHook(source.getInputStream(source.getJarEntry(ownership)).readAllBytes()));
             try (var files = Files.walk(classes)) {
@@ -104,6 +145,7 @@ public final class BuildNativeHook {
                     String name = classes.relativize(file).toString().replace('\\', '/');
                     // Offline inspectors/extractors never belong in an installable runtime.
                     if (name.contains("OfflineRuntimeAssets") || name.contains("OemMenuInspector")) continue;
+                    if (!nativeUi && (name.contains("IndependentMenuViewBridge") || name.contains("ProjectionMenuViewBridge"))) continue;
                     add(jar, name, legacy(Files.readAllBytes(file)));
                 }
             }
@@ -111,7 +153,7 @@ public final class BuildNativeHook {
         padForIsolatedSlot(staged);
         Files.move(staged, output, java.nio.file.StandardCopyOption.ATOMIC_MOVE,
                    java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-        System.out.println("NATIVE_HOOK_BUILT hooks=" + hooks + " class_major=46");
+        System.out.println("NATIVE_HOOK_BUILT hooks=" + hooks + " native_ui="+nativeUi+" class_major=46");
     }
     static void add(JarOutputStream jar, String name, byte[] bytes) throws Exception {
         JarEntry entry = new JarEntry(name); entry.setTime(0); jar.putNextEntry(entry); jar.write(bytes); jar.closeEntry();

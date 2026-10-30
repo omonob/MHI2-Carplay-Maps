@@ -9,7 +9,8 @@ import zipfile
 REPO = Path(__file__).resolve().parents[1]
 PROFILES = [("MU1102", "791", 55915411), ("MU1102", "790", 55915411),
             ("MU1367", "791", 55840541), ("MU1367", "790", 55840541),
-            ("MU1440", "790", 55840933)]
+            ("MU1440", "790", 55840933), ("MU1433", "790", 52751492),
+            ("MU1447", "790", 55712574)]
 _CHECKER_DIR = tempfile.TemporaryDirectory(prefix="cpmap-host-checker-")
 _CHECKER = Path(_CHECKER_DIR.name) / "cpmap-nav-check"
 
@@ -22,12 +23,22 @@ def host_checker():
 
 
 def package(mu, cluster):
-    return REPO / ("MU1440_SKODA" if mu == "MU1440" else mu) / (
+    brand={"MU1440":"MU1440_SKODA","MU1433":"MU1433_SKODA","MU1447":"MU1447_SEAT"}.get(mu,mu)
+    return REPO / brand / (
         "791_AID12.3" if cluster == "791" else "790_AID10.5")
 
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def navigation_name(mu):
+    return "CarPlayMapsG11Navigation.jar" if mu == "MU1433" else "CarPlayNavigationPatch.jar"
+
+
+def navigation_payload(payload, mu, cluster):
+    name = navigation_name(mu)
+    return payload / ("profiles/" + mu + "/" + cluster if mu == "MU1433" else "common") / name
 
 
 def run(script, root, *args, ok=True, extra_env=None):
@@ -74,10 +85,10 @@ def main():
     for mu, cluster, size in PROFILES:
         pkg = package(mu, cluster)
         payload = pkg / "payload"
-        nav = payload / "common/CarPlayNavigationPatch.jar"
+        nav = navigation_payload(payload, mu, cluster)
         with zipfile.ZipFile(nav) as archive:
             assert archive.testzip() is None
-            assert len([n for n in archive.namelist() if n.endswith(".class")]) == 9
+            assert len([n for n in archive.namelist() if n.endswith(".class")]) == (4 if mu == "MU1433" else 9)
             for name in archive.namelist():
                 if name.endswith(".class"):
                     assert int.from_bytes(archive.read(name)[6:8], "big") == 46
@@ -86,7 +97,8 @@ def main():
             assert archive.testzip() is None
             for name in archive.namelist():
                 if name.endswith(".class"):
-                    assert int.from_bytes(archive.read(name)[6:8], "big") == 48
+                    expected_major = 46 if name.startswith("org/omonob/") else 48
+                    assert int.from_bytes(archive.read(name)[6:8], "big") == expected_major, name
             assert not any("AbstractDispatcher" in n or "IReplyService" in n for n in archive.namelist())
         for mode in ("stock", "existing", "merged", "missing-file", "partial", "bad-startup"):
             with tempfile.TemporaryDirectory(prefix="cpmap-offline-") as tmp:
@@ -99,7 +111,7 @@ def main():
                     continue
                 output = run(pkg / "install.sh", root, payload, mu, cluster)
                 assert "CPMAP_INSTALL_OK" in output
-                installed_nav = jars / "CarPlayNavigationPatch.jar"
+                installed_nav = jars / navigation_name(mu)
                 if mode in ("existing", "merged"):
                     assert "KEEP_EXISTING" in output and not installed_nav.exists()
                     existing = jars / ("ExistingMergedPatch.jar" if mode == "merged" else "NavActiveIgnore.jar")
@@ -109,7 +121,7 @@ def main():
                 if mode == "partial":
                     with zipfile.ZipFile(jars / "NavActiveIgnore.jar") as archive:
                         assert archive.read(archive.namelist()[0]) == b"custom"
-                    assert lsd.read_text().index("CarPlayNavigationPatch.jar") < lsd.read_text().index("NavActiveIgnore.jar")
+                    assert lsd.read_text().index(navigation_name(mu)) < lsd.read_text().index("NavActiveIgnore.jar")
                 first_lsd = digest(lsd)
                 run(pkg / "install.sh", root, payload, mu, cluster)
                 assert digest(lsd) == first_lsd
@@ -135,13 +147,13 @@ def main():
             command_dir = root / "commands"
             command_dir.mkdir()
             fake_mv = command_dir / "mv"
-            fake_mv.write_text('#!/bin/sh\ncase "$1" in */CarPlayNavigationPatch.jar.new) exit 99;; esac\nexec /bin/mv "$@"\n')
+            fake_mv.write_text('#!/bin/sh\ncase "$1" in */'+navigation_name(mu)+'.new) exit 99;; esac\nexec /bin/mv "$@"\n')
             fake_mv.chmod(0o755)
             run(pkg / "install.sh", root, payload, mu, cluster, ok=False,
                 extra_env={"PATH": str(command_dir) + ":" + os.environ["PATH"]})
             assert before == (digest(dio), digest(lsd))
             assert not (jars / "CarPlayClusterControls.jar").exists()
-            assert not (jars / "CarPlayNavigationPatch.jar").exists()
+            assert not (jars / navigation_name(mu)).exists()
             assert not (root / "mnt/app/carplaymaps").exists()
     print("TOOLBOX_NAVIGATION_OFFLINE_TEST_OK")
 

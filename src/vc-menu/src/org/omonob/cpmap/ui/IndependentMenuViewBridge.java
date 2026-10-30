@@ -39,6 +39,9 @@ public final class IndependentMenuViewBridge {
     private final TextAreaModel entryLabel,pageTitle;
     private final Container page;
     private final int stockHeight;
+    private final boolean compact;
+    private final int compactRowPitch, compactPopupPitch, compactPopupWidth, compactPopupX;
+    private final int compactOptionWidth, compactListX, compactListY;
     private final WidgetModel[] originalParentChildren, originalViewChildren;
     private static final int[] FIELDS={0,1,3,5};
     private final ButtonModel[] rows=new ButtonModel[4], options=new ButtonModel[8], confirmationButtons=new ButtonModel[2];
@@ -58,6 +61,7 @@ public final class IndependentMenuViewBridge {
 
     private IndependentMenuViewBridge(ViewModel target) throws Exception {
         view=target;
+        compact=view.get_width()==800 && view.get_height()==480;
         store=ProjectionSettings.systemStore();
         wirelessStore=WirelessCarPlaySettings.systemStore();
         cardStore=CardPositionSettings.systemStore();
@@ -77,6 +81,17 @@ public final class IndependentMenuViewBridge {
         WidgetModel plainDonor=required(view,4894361);
         DropDownModel dropDownDonor=((DropDownButtonModel)rowDonor).get_dropDownRef();
         if(dropDownDonor==null || dropDownDonor.get_dropDownListRef()==null)throw new IllegalStateException("OEM DropDown template missing");
+        // Read G11 geometry from its OWN skin. Same widget IDs on SEAT do
+        // not imply the 1280x640 VW dimensions; SKG11 uses different IDs.
+        compactRowPitch=ancestorListItem(rowDonor).get_height();
+        WidgetModel nativeOption=findListItem(dropDownDonor.get_dropDownListRef());
+        if(nativeOption==null)throw new IllegalStateException("Native option item missing");
+        compactPopupPitch=nativeOption.get_height();
+        compactOptionWidth=nativeOption.get_width();
+        compactPopupWidth=dropDownDonor.get_width();
+        compactPopupX=dropDownDonor.get_x();
+        compactListX=dropDownDonor.get_dropDownListRef().get_x();
+        compactListY=dropDownDonor.get_dropDownListRef().get_y();
         // Append one real native list entry. Do not rename, hide or shrink the
         // original MirrorLink region while its page animation is being drawn.
         entryItem=(ListItemModel)cloneTree(ancestorListItem(plainDonor));
@@ -226,7 +241,11 @@ public final class IndependentMenuViewBridge {
         // The generated factory knows only the firmware's original CloneData.
         // Delegate those unchanged and clone only our added static entry here.
         ((TemplateListModel)stockList).setWidgetCloneFactory(new EntryCloneFactory());
-        ((ContainerModel)stockList).setChildren(append(originalStockChildren,entryItem));
+        WidgetModel[] extended=append(originalStockChildren,entryItem);
+        // Attach before native View.init on every exact firmware ABI. The OEM
+        // initialization creates list caches and touch delegators once, including
+        // our entry; no post-init cache surgery or stock-tree reinitialization.
+        ((ContainerModel)stockList).setChildren(extended);
         view.setChildren(append(append(originalViewChildren,page),popup));
         log("INDEPENDENT_ENTRY_ATTACHED public_v2=1 fields=4 stock_mirrorlink_untouched=1 wireless_interface_only=1 card_position_selector=1");
     }
@@ -293,7 +312,7 @@ public final class IndependentMenuViewBridge {
         // OEM SYSTEM_SETUP_UNITS: model height94, visible height80, pitch91.
         // A 94px model height is NOT the row pitch (the skin has transparent edges).
         int x=30;
-        if(x<0 || x+width>view.get_width() || height<64 || height>100) throw new IllegalStateException("OEM grey-bar bounds invalid");
+        if(x<0 || x+width>view.get_width() || height<(compact?40:64) || height>100) throw new IllegalStateException("OEM grey-bar bounds invalid");
         // The native WidgetList is wider than its visible grey bar. Anchor to
         // that image, not to the list or its scrolling content coordinates.
         panel.set_x(x);panel.set_y(84);panel.set_width(width);panel.set_height(549);
@@ -333,6 +352,7 @@ public final class IndependentMenuViewBridge {
         for(int option=0;option<2;option++){
             applyFont(confirmationLabels[option]);confirmationLabels[option].set_alignmentHorizontal(textAlignment);
         }
+        if(compact)applyCompactGeometry();
         log(new StringBuffer("MENU_STATE locale=").append(language).append(" generation=").append(state.generation)
             .append(" map_mask=").append(state.mapMask).append(" mirror_mask=").append(state.mirrorMask)
             .append(" info=").append(state.information).append(" source=").append(state.source).toString());
@@ -397,6 +417,7 @@ public final class IndependentMenuViewBridge {
         // PushUp.visibleChanged initializes the native list, resetting its
         // viewport. Restore the saved item's position after that transition.
         choiceList.setViewportY(Math.max(0,Math.min(current*91,(count-6)*91)));
+        if(compact)placeCompactPopup(count,current,anchor);
         for(int i=0;i<count;i++)options[i].set_activated(i==current);
         popup.repaint();
         log(new StringBuffer("CHOICE_OPEN field=").append(activeField).append(" count=").append(count).append(" continuous_scroll=1 viewport_y=").append(choiceList.getViewport().y).toString());
@@ -406,6 +427,10 @@ public final class IndependentMenuViewBridge {
         popupBackground.set_visible(false);confirmation.set_visible(true);confirmationBackground.set_visible(true);
         popupTitle.set_text(LinkedMessages.get(language,LinkedMessages.CONFIRM));
         geometry(notice,615,360,notice.get_width(),120);notice.set_visualLineCount(3);
+        if(compact) {
+            int left=Math.max(8,Math.min(compactPopupX,view.get_width()-compactPopupWidth-8));
+            geometry(notice,left+16,312,compactPopupWidth-32,96);
+        }
         notice.set_text(new StringBuffer(LinkedMessages.get(language,LinkedMessages.ADJUST)).append('\n')
             .append(choice(ProjectionSettings.VC_MIRROR,ProjectionSettings.mirrorChoiceIndex(ProjectionSettings.mirrorAfterMapChoice(state,mapChoice)))).toString());
         for(int i=0;i<2;i++){
@@ -486,6 +511,14 @@ public final class IndependentMenuViewBridge {
     }
     private static void prepareStaticItem(ListItemModel item,ButtonModel button){
         item.setListItemControl(null);item.set_dynamicIndex(-1);item.set_existenceFlags(null);
+        // SKG11's SelectDevice donor is hidden when no phone is connected.
+        // Our permanent entry must not inherit that device-dependent state.
+        item.set_visible(true);button.set_visible(true);
+        item.set_enabled(true);button.set_enabled(true);
+        // A disconnected SKG11 SelectDevice donor also becomes noninteractive.
+        // Enabled/visible are separate OEM properties and do not restore input.
+        button.set_interactive(true);
+        item.set_availableInVariant(true);button.set_availableInVariant(true);
         item.set_subItemRefs(null);item.set_dummyContentRef(null);item.set_effectWidgetRefs(null);
         item.set_dynamicResizeWidgetRef(null);item.set_dynamicResizeDirection(ListItemModel.DYNAMICRESIZEDIRECTION_NONE);
         item.set_numberContainerRef(null);item.set_numberTextRef(null);item.set_activatedIndex(-1);
@@ -498,6 +531,7 @@ public final class IndependentMenuViewBridge {
         button.setController(controller); controller.setWidget(button);
         button.set_predictiveActivation(false);
         button.set_buttonMode(ButtonModel.BUTTONMODE_DEFAULT);
+        button.set_interactive(true);
         Action listener=new Action(button,code);
         controller.addOutEventListener(listener); listeners.addElement(listener);
     }
@@ -543,10 +577,89 @@ public final class IndependentMenuViewBridge {
         WidgetModel[] result=new WidgetModel[original.length+1];
         System.arraycopy(original,0,result,0,original.length); result[original.length]=added; return result;
     }
-    private static WidgetModel required(WidgetModel root,int id) {
+    private WidgetModel required(WidgetModel root,int id) {
         WidgetModel result=findId(root,id);
+        if(result==null && compact) {
+            // Exact names verified in each stock Ssm_5458 component. Never
+            // load a VW generated view or its skin as a G11 substitute.
+            if(id==47234883)result=find(root,"WidgetList");
+            else if(id==56030257){WidgetModel item=find(root,"MirrorlinkNotificationPopup");if(item!=null)result=find(item,"ScaleImage");}
+            else if(id==40267630)result=find(root,"DropDownButton");
+            else if(id==4894361){WidgetModel item=find(root,"SelectDevice");if(item!=null)result=findButton(item);}
+            else if(id==69892873)result=find(root,"BackgroundImage");
+            else if(id==19482720)result=find(root,"headline");
+            else if(id==96892073)result=find(root,"Frame");
+            else if(id==101603979)result=find(root,"TextLabel");
+        }
         if(result==null) throw new IllegalStateException(new StringBuffer("Missing stock template ").append(id).toString());
         return result;
+    }
+    /** G11-only layout. The original 1280x640 path above remains unchanged. */
+    private void applyCompactGeometry() {
+        int width=stockReference.get_width(),height=stockReference.get_height();
+        int left=stockReference.getAbsX()-view.getAbsX();
+        if(left<0 || left+width>view.get_width())throw new IllegalStateException("G11 native anchor outside view");
+        int top=parent.get_y(),available=stockHeight;
+        if(width<600 || width>780 || compactRowPitch<50 || compactRowPitch>80
+            || compactPopupPitch<50 || compactPopupPitch>80 || compactPopupWidth<300 || compactPopupWidth>440)
+            throw new IllegalStateException("Unknown G11 stock geometry");
+        geometry(entryItem,0,0,width,compactRowPitch);
+        geometry(entryButton,0,compactRowPitch-height,width,height);
+        geometry(entryLabel,20,0,width-40,height);resizeBackground(entryButton);
+        geometry(panel,left,top,width,available);
+        WidgetModel frame=find(page,"Frame");
+        if(frame!=null)geometry(frame,0,top+available,view.get_width(),view.get_height()-top-available);
+        for(int index=0;index<rows.length;index++) {
+            geometry(rows[index],0,index*compactRowPitch,width,height);resizeBackground(rows[index]);
+            int split=width/2;
+            geometry(names[index],18,0,split-28,height);
+            geometry(values[index],split+18,0,width-split-68,height);
+            // SEAT's current-value text has a 400px OEM left inset because
+            // its original label spans the entire bar. We split the label
+            // into two actual rectangles, so retaining that inset hides it.
+            names[index].set_padding(new de.vw.mib.graphics.Insets(0,0,0,0));
+            values[index].set_padding(new de.vw.mib.graphics.Insets(0,0,0,0));
+            WidgetModel arrow=find(rows[index],"ArrowGlowContainer");
+            if(arrow!=null)arrow.set_x(width-arrow.get_width()-12);
+            WidgetModel separator=find(rows[index],"Separator");
+            if(separator!=null)geometry(separator,split,0,separator.get_width(),height);
+        }
+        choiceList.set_spacingVertical(0);
+        geometry(choiceList,compactListX,compactListY,compactOptionWidth,compactPopupPitch*5);
+        for(int index=0;index<options.length;index++) {
+            geometry(choiceItems[index],0,index*compactPopupPitch,compactOptionWidth,compactPopupPitch);
+            geometry(options[index],0,0,compactOptionWidth,height);resizeBackground(options[index]);
+            optionLabels[index].set_width(compactOptionWidth-optionLabels[index].get_x()-16);
+        }
+        int popupLeft=Math.max(8,Math.min(compactPopupX,view.get_width()-compactPopupWidth-8));
+        geometry(confirmationBackground,popupLeft,100,compactPopupWidth,316);
+        geometry(popupTitle,popupLeft+16,110,compactPopupWidth-32,48);
+        popupTitle.set_colorForeground(entryLabel.get_colorForeground());
+        notice.set_colorForeground(entryLabel.get_colorForeground());
+        popupTitle.set_font(new de.vw.mib.graphics.font.FontAttribs(entryLabel.get_font()));
+        notice.set_font(new de.vw.mib.graphics.font.FontAttribs(entryLabel.get_font()));
+        for(int index=0;index<2;index++) {
+            geometry(confirmationButtons[index],popupLeft+12,168+index*64,compactPopupWidth-24,56);
+            geometry(confirmationLabels[index],12,0,compactPopupWidth-48,56);
+            confirmationLabels[index].set_font(new de.vw.mib.graphics.font.FontAttribs(entryLabel.get_font()));
+            resizeBackground(confirmationButtons[index]);
+        }
+        log(new StringBuffer("G11_STOCK_LAYOUT canvas=800x480 row=").append(width).append('x').append(height)
+            .append(" pitch=").append(compactRowPitch).append(" popup=").append(compactPopupWidth)
+            .append(" option_pitch=").append(compactPopupPitch).toString());
+    }
+    private void placeCompactPopup(int count,int current,de.vw.mib.graphics.Rectangle anchor) {
+        int inset=Math.max(12,compactListY+8);
+        int visible=Math.min(count,Math.max(1,(stockHeight-inset)/compactPopupPitch));
+        int height=visible*compactPopupPitch+inset;
+        int x=Math.max(8,Math.min(compactPopupX,view.get_width()-compactPopupWidth-8));
+        int y=Math.max(parent.get_y(),Math.min(anchor.y,view.get_height()-height-8));
+        popupBackground.set_layoutAutomatically(false);
+        geometry(popupBackground,x,y,compactPopupWidth,height);
+        geometry(choiceList,compactListX,compactListY,compactOptionWidth,visible*compactPopupPitch);
+        popupBackground.setAutoLayoutArea(new de.vw.mib.graphics.Rectangle(0,parent.get_y(),view.get_width(),stockHeight));
+        choiceList.validateList();
+        choiceList.setViewportY(Math.max(0,Math.min(current*compactPopupPitch,(count-visible)*compactPopupPitch)));
     }
     private static int relativeX(WidgetModel model,WidgetModel ancestor) {
         int x=0;
@@ -613,6 +726,9 @@ public final class IndependentMenuViewBridge {
                 } catch(NoSuchMethodException ignored) { }
             }
             to.set_name(from.get_name()); to.set_targetId(nextId++);
+            // New VC widgets are independent of donor hardware/USB variants.
+            // The original stock widget and its variant flags are untouched.
+            if(compact){to.set_availableInVariant(true);to.set_enabled(true);}
             if(from.getUI()!=null) { WidgetUI ui=(WidgetUI)from.getUI().getClass().newInstance(); to.setUI(ui);ui.setWidget(to); }
             if(from instanceof ContainerModel) ((ContainerModel)to).setChildren((WidgetModel[])remap(((ContainerModel)from).getChildren()));
             to.enablePropertyChanged();

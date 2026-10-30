@@ -8,6 +8,7 @@
 *.ps1 text eol=lf
 *.json text eol=lf
 *.esd text eol=lf
+tests/fixtures/host-only/sync text eol=lf
 **/payload/common/cpvc-mirror-canvas-* binary
 *.jar binary
 **/payload/common/cpmap-nav-check binary
@@ -21,3 +22,9 @@ MU1367/**/payload/common/carplay-pairing-helper binary
 MU1440_SKODA/**/payload/common/altscreen-most-bridge binary
 MU1440_SKODA/**/payload/common/carplay-cluster-supervisor binary
 MU1440_SKODA/**/payload/common/carplay-pairing-helper binary
+MU1433_SKODA/**/payload/common/altscreen-most-bridge binary
+MU1433_SKODA/**/payload/common/carplay-cluster-supervisor binary
+MU1433_SKODA/**/payload/common/carplay-pairing-helper binary
+MU1447_SEAT/**/payload/common/altscreen-most-bridge binary
+MU1447_SEAT/**/payload/common/carplay-cluster-supervisor binary
+MU1447_SEAT/**/payload/common/carplay-pairing-helper binary

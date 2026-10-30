@@ -226,10 +226,10 @@ typedef void (*AESCTRFinalFn)(void *);
 #define ALTSCREEN_FORCE_KEYFRAME_INTERVAL 120ULL
 #endif
 
-/* Session layout is firmware-specific.  The established MU profiles store the
- * screen AES key at session+0x1c8, while exact P0627 (JXE 52754105) stores it
- * at session+0x1c0.  Keep 0x1c8 as the default and override only for the
- * isolated MU0627 build. */
+/* Session layout is firmware-specific, not a G11/G13 screen-size property.
+ * Exact P0627 and SKODA MU1433 use session+0x1c0. SEAT MU1447 and
+ * established G13 profiles use +0x1c8. Exact profile headers override the
+ * default after auditing the stock screen-key derivation call. */
 #ifndef MHI2_SESSION_AES_KEY_OFFSET
 #define MHI2_SESSION_AES_KEY_OFFSET 456U
 #endif

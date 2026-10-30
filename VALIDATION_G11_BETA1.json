@@ -1,0 +1,64 @@
+{
+  "release": "toolbox-plaintext-v2.1.0-g11-beta.1",
+  "status": "offline_pass_physical_g11_acceptance_pending",
+  "distribution": "traditional_full_MQB_Toolbox_only",
+  "archive_sha256": "42ec5ac7f25bcabbec5213bc9a97d28048718c78b78667a564eedcbc2cda5d35",
+  "base_release": "toolbox-plaintext-v2.0.1",
+  "base_archive_sha256": "86aada968b035710696f7e4a7cc7a2e13bb83fb4e71ad3c4374e40ecb193cbae",
+  "new_profiles": {
+    "MU1433": {
+      "brand": "SKODA",
+      "train": "MHI2_ER_SKG11_K3343",
+      "lsd_jxe_bytes": 52751492,
+      "session_field_offset": 448,
+      "core_sha256": "27512347859ade9766e7503a25c77531edbda7cfbe5fac224352ad172f10f348"
+    },
+    "MU1447": {
+      "brand": "SEAT",
+      "train": "MHI2_ER_SEG11_P4709",
+      "lsd_jxe_bytes": 55712574,
+      "session_field_offset": 456,
+      "core_sha256": "97ccb829f996b74305099ca54e6f4a693a17381b391d170c1227f44e49ff0769"
+    }
+  },
+  "cluster": "AID 10.5",
+  "fixed_instrument_output": [1010, 376],
+  "own_brand_headunit_ui": [800, 480],
+  "locales_preserved": 31,
+  "excluded_firmware": ["MU0033"],
+  "checks": {
+    "exact_firmware_java_api_builds": "pass_two_profiles",
+    "menu_persistence_policy_locales_wheel_and_separate_process_reload": "pass",
+    "native_core_two_independent_builds": "byte_identical_per_profile",
+    "production_declaration_scene_tests": "pass_both_profiles",
+    "production_async_transport_checks": "405_per_profile_pass",
+    "synthetic_session_layout_and_wrong_aid_rejection": "pass_both_profiles",
+    "host_install_repeat_repair_rollback_restore": "pass_seven_profiles",
+    "g11_navigation_abi_foreign_patch_preservation": "pass",
+    "negative_firmware_and_entry_wrapper_checks": "14_pass",
+    "v1_2_2_upgrade_and_original_restore": "pass_five_previously_supported_profiles",
+    "final_archive_crc_profile_payloads_and_private_payload_scan": "pass",
+    "existing_five_per_profile_payloads": "byte_identical_to_public_2_0_1",
+    "unrelated_MQB_files": "byte_identical_to_public_2_0_1"
+  },
+  "historical_vm_evidence": {
+    "candidate": "G11_native_800_v9",
+    "native_english_ui_click_save_full_vm_restart": "passed_MU1433_and_MU1447",
+    "final_menu_class_delta": ["MenuClusterProfile.class_excluded_old_profile", "META_INF_padding"],
+    "other_menu_classes_controls_and_mirror_rate": "unchanged_from_native_vm_candidate",
+    "final_native_core_is_not_the_historical_vm_core": true
+  },
+  "test_boundary": {
+    "host_tests_use_explicit_host_only_sync_shim": true,
+    "production_sync_unchanged": true,
+    "final_real_phone_video_test": false,
+    "physical_G11_SD_installation": false,
+    "physical_MOST_cluster_decode": false,
+    "physical_hot_switch_long_run_reconnect": false,
+    "measured_G11_fps_latency": false,
+    "wireless_service_included": false,
+    "standalone_installer_included": false,
+    "navigation_text_music_artwork_mapping_included": false,
+    "vehicle_connected_or_modified_by_this_release_work": false
+  }
+}

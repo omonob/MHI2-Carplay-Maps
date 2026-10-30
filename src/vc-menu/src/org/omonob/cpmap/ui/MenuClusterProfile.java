@@ -14,7 +14,7 @@ public final class MenuClusterProfile {
    byte[] bytes=new byte[64];int n=in.read(bytes);
    if(n<=0)throw new IllegalStateException("Empty cluster profile");
    String text=new String(bytes,0,n,"US-ASCII").trim();
-   if(text.equals("MU1102/790")||text.equals("MU1367/790")||text.equals("MU1440/790"))return 790;
+   if(text.equals("MU1102/790")||text.equals("MU1367/790")||text.equals("MU1440/790")||text.equals("MU1433/790")||text.equals("MU1447/790"))return 790;
    if(text.equals("MU1102/791")||text.equals("MU1367/791"))return 791;
    throw new IllegalStateException("Unknown cluster profile");
   }catch(Exception error){throw new IllegalStateException(error.toString());}

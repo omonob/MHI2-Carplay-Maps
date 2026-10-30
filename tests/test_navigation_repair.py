@@ -6,7 +6,7 @@ import subprocess
 import tempfile
 
 from test_qnx_navigation import strict_environment
-from test_toolbox_install import PROFILES, digest, fixture, host_checker, package, run
+from test_toolbox_install import PROFILES, digest, fixture, host_checker, package, run, navigation_payload, navigation_name
 
 
 def main():
@@ -18,7 +18,8 @@ def main():
                 base = Path(tmp)
                 root, payload = base / "unit", base / "payload"
                 shutil.copytree(pkg / "payload", payload)
-                nav = payload / "common/CarPlayNavigationPatch.jar"
+                nav_name = navigation_name(mu)
+                nav = navigation_payload(payload, mu, cluster)
                 mode = "existing" if state.startswith("existing") or state == "own-and-foreign" else "partial" if state == "partial" else "stock"
                 dio, lsd, jars = fixture(root, size, mode, nav)
                 before = digest(dio), digest(lsd)
@@ -35,9 +36,9 @@ def main():
                         '$J9 $BOOTCLASSPATH Main')
                 if state in ("own-and-foreign", "own-missing"):
                     text = text.replace('$J9 $BOOTCLASSPATH Main',
-                        'BOOTCLASSPATH="$BOOTCLASSPATH -Xbootclasspath/p:$BASE_DIR/lsd/jars/CarPlayNavigationPatch.jar"\n$J9 $BOOTCLASSPATH Main')
+                        'BOOTCLASSPATH="$BOOTCLASSPATH -Xbootclasspath/p:$BASE_DIR/lsd/jars/'+nav_name+'"\n$J9 $BOOTCLASSPATH Main')
                     if state == "own-and-foreign":
-                        (jars / "CarPlayNavigationPatch.jar").write_bytes(b"old broken owned jar")
+                        (jars / nav_name).write_bytes(b"old broken owned jar")
                 lsd.write_text(text)
                 before = digest(dio), digest(lsd)
                 if state in ("existing-no-sd", "no-patch-no-sd"):
@@ -53,7 +54,7 @@ def main():
                 output = run(pkg / "install.sh", root, payload, mu, cluster,
                              ok=state != "no-patch-no-sd", extra_env=env)
                 if state == "no-patch-no-sd":
-                    assert "PAYLOAD_MISSING_CarPlayNavigationPatch.jar" in output
+                    assert "PAYLOAD_MISSING_"+nav_name in output
                     assert before == (digest(dio), digest(lsd))
                     continue
                 assert "CPMAP_INSTALL_OK" in output
@@ -62,13 +63,13 @@ def main():
                 assert active.count("CarPlayClusterControls.jar") == 1
                 if state.startswith("existing") or state == "own-and-foreign":
                     assert "KEEP_EXISTING" in output
-                    assert "CarPlayNavigationPatch.jar" not in active
+                    assert nav_name not in active
                 else:
-                    assert "INSTALL_MISSING" in output and active.count("CarPlayNavigationPatch.jar") == 1
+                    assert "INSTALL_MISSING" in output and active.count(nav_name) == 1
                 if foreign_hash:
                     assert foreign_hash == digest(foreign)
                 if state == "partial":
-                    assert active.index("CarPlayNavigationPatch.jar") < active.index("NavActiveIgnore.jar")
+                    assert active.index(nav_name) < active.index("NavActiveIgnore.jar")
                 if state == "multiple":
                     assert active.count("Unrelated.jar") == 1
                 if state != "rcc":

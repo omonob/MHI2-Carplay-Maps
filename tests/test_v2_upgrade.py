@@ -5,7 +5,8 @@ from test_toolbox_install import PROFILES,package,fixture,digest,run
 
 def main():
  with zipfile.ZipFile(sys.argv[1]) as old:
-  for mu,cluster,size in PROFILES:
+  # G11 was not supported by the published v1.2.2 archive.
+  for mu,cluster,size in [p for p in PROFILES if p[0] not in ('MU1433','MU1447')]:
    with tempfile.TemporaryDirectory(prefix='cpmap-v2-upgrade-') as tmp:
     base=Path(tmp);payload=base/'v1-payload';prefix='Custom/carplay_maps_vc/payload/'
     for name in old.namelist():

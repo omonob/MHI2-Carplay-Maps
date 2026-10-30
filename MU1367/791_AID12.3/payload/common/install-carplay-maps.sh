@@ -3,7 +3,7 @@
 PAYLOAD="$1"
 EXPECTED_MU="$2"
 INSTRUMENT="$3"
-VERSION="VC-PLAINTEXT-TOOLBOX-2.0.1"
+VERSION="VC-PLAINTEXT-2.1.0-g11-beta.1"
 
 fail() {
     echo "CPMAP_INSTALL_FAIL=$1"
@@ -15,7 +15,7 @@ if [ -z "$PAYLOAD" ] || [ -z "$EXPECTED_MU" ] || [ -z "$INSTRUMENT" ]; then
 fi
 
 case "$EXPECTED_MU:$INSTRUMENT" in
-    MU1102:791|MU1102:790|MU1367:791|MU1367:790|MU1440:790) ;;
+    MU1102:791|MU1102:790|MU1367:791|MU1367:790|MU1440:790|MU1433:790|MU1447:790) ;;
     *) fail "UNSUPPORTED_PROFILE" ;;
 esac
 
@@ -54,15 +54,17 @@ case "$JXE_SIZE" in
     55915411) DETECTED_MU="MU1102" ;;
     55840541) DETECTED_MU="MU1367" ;;
     55840933) DETECTED_MU="MU1440" ;;
+    52751492) DETECTED_MU="MU1433" ;;
+    55712574) DETECTED_MU="MU1447" ;;
     *) fail "UNSUPPORTED_JXE_SIZE_$JXE_SIZE" ;;
 esac
 
 if [ "$DETECTED_MU" != "$EXPECTED_MU" ]; then
     fail "PROFILE_MISMATCH_${DETECTED_MU}_EXPECTED_${EXPECTED_MU}"
 fi
-if [ "$DETECTED_MU" = "MU1440" ] && [ "$INSTRUMENT" != "790" ]; then
-    fail "MU1440_REQUIRES_790"
-fi
+case "$DETECTED_MU:$INSTRUMENT" in
+    MU1440:791|MU1433:791|MU1447:791) fail "SKODA_SEAT_REQUIRES_AID10_5" ;;
+esac
 if [ -e "$MMX/dev/ipod0" ]; then
     fail "DISCONNECT_CARPLAY_BEFORE_INSTALL"
 fi
@@ -73,8 +75,19 @@ CONTROL_JAR="$PAYLOAD/common/CarPlayClusterControls.jar"
 if [ -s "$PAYLOAD/profiles/$EXPECTED_MU/$INSTRUMENT/CarPlayClusterControls.jar" ]; then
     CONTROL_JAR="$PAYLOAD/profiles/$EXPECTED_MU/$INSTRUMENT/CarPlayClusterControls.jar"
 fi
-NAV_JAR="$PAYLOAD/common/CarPlayNavigationPatch.jar"
-NAV_TARGET="$JARS/CarPlayNavigationPatch.jar"
+NAV_NAME="CarPlayNavigationPatch.jar"
+NAV_KIND="standard"
+case "$DETECTED_MU" in
+    MU1433) NAV_NAME="CarPlayMapsG11Navigation.jar"; NAV_KIND="g11" ;;
+esac
+NAV_JAR="$PAYLOAD/common/$NAV_NAME"
+[ "$NAV_KIND" != g11 ] || NAV_JAR="$PAYLOAD/profiles/$EXPECTED_MU/$INSTRUMENT/$NAV_NAME"
+NAV_TARGET="$JARS/$NAV_NAME"
+PREVIOUS_NAV_NAME="CarPlayNavigationPatch.jar"
+if [ -f "$ROOT/rollback/NAV_JAR_NAME" ]; then
+    PREVIOUS_NAV_NAME=`cat "$ROOT/rollback/NAV_JAR_NAME"` || fail "NAV_BACKUP_METADATA_UNREADABLE"
+    case "$PREVIOUS_NAV_NAME" in CarPlayNavigationPatch.jar|CarPlayMapsG11Navigation.jar) ;; *) fail "NAV_BACKUP_METADATA_INVALID" ;; esac
+fi
 NAV_CHECK="$PAYLOAD/common/cpmap-nav-check"
 BRIDGE="$PAYLOAD/common/altscreen-most-bridge"
 SUPERVISOR="$PAYLOAD/common/carplay-cluster-supervisor"
@@ -114,13 +127,13 @@ run_nav_check --self-test || fail "NAVIGATION_CHECKER_UNAVAILABLE_REEXTRACT_SD"
 
 navigation_payload_intact() {
     [ -s "$1" ] || return 1
-    run_nav_check --payload "$1"
+    if [ "$NAV_KIND" = g11 ]; then run_nav_check --g11-payload "$DETECTED_MU" "$1"; else run_nav_check --payload "$1"; fi
 }
 
 # Inspect real ZIP central/local directory entries, not byte-string matches.
 has_navigation_patch() {
     [ -s "$1" ] || return 1
-    run_nav_check --has-patch "$1"
+    if [ "$NAV_KIND" = g11 ]; then run_nav_check --g11-payload "$DETECTED_MU" "$1"; else run_nav_check --has-patch "$1"; fi
 }
 NAV_INSTALL=yes
 NAV_USE_OWN=yes
@@ -161,7 +174,7 @@ if [ "$NAV_INSTALL" = no ]; then
 else
     # Only demand a valid SD copy if it is actually needed. A partial custom
     # patch is completed by our seven-class prepend, without changing its JAR.
-    [ -s "$NAV_JAR" ] || fail "PAYLOAD_MISSING_CarPlayNavigationPatch.jar"
+    [ -s "$NAV_JAR" ] || fail "PAYLOAD_MISSING_$NAV_NAME"
     navigation_payload_intact "$NAV_JAR" || fail "NAVIGATION_PAYLOAD_DAMAGED_REEXTRACT_SD"
     echo "CPMAP_NAVIGATION_PATCH=INSTALL_MISSING"
 fi
@@ -255,12 +268,13 @@ else
     touch "$NEW/rollback/JAR_ABSENT" || fail "JAR_ABSENT_MARK_FAILED"
 fi
 
-if [ -e "$ROOT/rollback/NAV_JAR_ABSENT" ]; then
+echo "$NAV_NAME" > "$NEW/rollback/NAV_JAR_NAME" || fail "NAV_BACKUP_METADATA_WRITE_FAILED"
+if [ "$PREVIOUS_NAV_NAME" = "$NAV_NAME" ] && [ -e "$ROOT/rollback/NAV_JAR_ABSENT" ]; then
     touch "$NEW/rollback/NAV_JAR_ABSENT" || fail "NAV_ABSENT_MARK_FAILED"
-elif [ -s "$ROOT/rollback/CarPlayNavigationPatch.jar" ]; then
-    cp "$ROOT/rollback/CarPlayNavigationPatch.jar" "$NEW/rollback/CarPlayNavigationPatch.jar" || fail "NAV_BACKUP_FAILED"
+elif [ "$PREVIOUS_NAV_NAME" = "$NAV_NAME" ] && [ -s "$ROOT/rollback/$NAV_NAME" ]; then
+    cp "$ROOT/rollback/$NAV_NAME" "$NEW/rollback/$NAV_NAME" || fail "NAV_BACKUP_FAILED"
 elif [ -s "$NAV_TARGET" ]; then
-    cp "$NAV_TARGET" "$NEW/rollback/CarPlayNavigationPatch.jar" || fail "NAV_BACKUP_FAILED"
+    cp "$NAV_TARGET" "$NEW/rollback/$NAV_NAME" || fail "NAV_BACKUP_FAILED"
 else
     touch "$NEW/rollback/NAV_JAR_ABSENT" || fail "NAV_ABSENT_MARK_FAILED"
 fi
@@ -269,7 +283,13 @@ ADD_CLASSPATH='$BASE_DIR/lsd/jars/CarPlayClusterControls.jar'
 ADD_CLASSPATH='$BASE_DIR/lsd/jars/VCMenu.jar:$BASE_DIR/lsd/jars/VCMirrorRate.jar:'"$ADD_CLASSPATH"
 if [ "$NAV_USE_OWN" = yes ]; then
     [ -z "$ADD_CLASSPATH" ] || ADD_CLASSPATH="$ADD_CLASSPATH:"
-    ADD_CLASSPATH="$ADD_CLASSPATH"'$BASE_DIR/lsd/jars/CarPlayNavigationPatch.jar'
+    NAV_REFERENCE='$BASE_DIR/lsd/jars/'"$NAV_NAME"
+    if [ "$NAV_KIND" = g11 ]; then
+        # The exact older ABI must win over any unrelated, existing JAR.
+        ADD_CLASSPATH="$NAV_REFERENCE:${ADD_CLASSPATH%:}"
+    else
+        ADD_CLASSPATH="$ADD_CLASSPATH$NAV_REFERENCE"
+    fi
 fi
 if [ -z "$ADD_CLASSPATH" ]; then
     cp "$LSD" "$STAGE/lsd.sh.patched" || fail "LSD_STAGE_FAILED"
@@ -277,7 +297,7 @@ else
     # Extend the existing prepend option if present. Do not emit a second
     # -Xbootclasspath/p option: some J9 builds keep only its last occurrence.
     # On a stock script, add one line immediately before J9 instead.
-    awk -v prepend="$ADD_CLASSPATH" '
+    awk -v prepend="$ADD_CLASSPATH" -v nav_name="$NAV_NAME" '
         {
             lines[NR]=$0
             if ($0 ~ /^[ \t]*#/) next
@@ -289,7 +309,8 @@ else
                 value=substr($0,RSTART+18,RLENGTH-18)
                 count=split(value,items,":")
                 for(i=1;i<=count;i++) {
-                    if(items[i] ~ /\/CarPlayClusterControls\.jar$/ || items[i] ~ /\/CarPlayNavigationPatch\.jar$/ || items[i] ~ /\/VCMenu\.jar$/ || items[i] ~ /\/VCMirrorRate\.jar$/) continue
+                    item_count=split(items[i],path_parts,"/")
+                    if(items[i] ~ /\/CarPlayClusterControls\.jar$/ || path_parts[item_count]==nav_name || items[i] ~ /\/VCMenu\.jar$/ || items[i] ~ /\/VCMirrorRate\.jar$/) continue
                     if(length(items[i]) && !seen[items[i]]++) kept=kept ":" items[i]
                 }
             }
@@ -414,7 +435,7 @@ active_reference_count() {
 [ `active_reference_count 'VCMirrorRate.jar'` -eq 1 ] || { rollback_commit; fail "RATE_CLASSPATH_VERIFY_FAILED"; }
 if [ "$NAV_INSTALL" = yes ]; then
     navigation_payload_intact "$NAV_TARGET" && run_nav_check --same "$NAV_JAR" "$NAV_TARGET" || { rollback_commit; fail "NAVIGATION_VERIFY_FAILED"; }
-    [ `active_reference_count 'CarPlayNavigationPatch.jar'` -eq 1 ] || { rollback_commit; fail "NAVIGATION_CLASSPATH_VERIFY_FAILED"; }
+    [ `active_reference_count "$NAV_NAME"` -eq 1 ] || { rollback_commit; fail "NAVIGATION_CLASSPATH_VERIFY_FAILED"; }
 fi
 rm -rf "$OLD" "$STAGE" 2>/dev/null
 

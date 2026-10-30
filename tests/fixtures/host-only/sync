@@ -1,0 +1,4 @@
+#!/bin/sh
+# HOST FIXTURE ONLY: avoid syncing unrelated WSL/network disks in shell tests.
+# Not copied into a payload. Production QNX scripts keep their real sync calls.
+exit 0

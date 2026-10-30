@@ -1,13 +1,13 @@
-"""All five public profiles: clean install, repair, repeat, restore, rollback.
+"""All local candidate profiles: clean install, repair, repeat, restore, rollback.
 No SSH or real unit access. Temporary fixture filesystem only.
 """
 import os, tempfile
 from pathlib import Path
-from test_toolbox_install import PROFILES, package, fixture, digest, run
+from test_toolbox_install import PROFILES, package, fixture, digest, run, navigation_payload, navigation_name
 
 def main():
  for mu,cluster,size in PROFILES:
-  pkg=package(mu,cluster);payload=pkg/'payload';nav=payload/'common/CarPlayNavigationPatch.jar'
+  pkg=package(mu,cluster);payload=pkg/'payload';nav=navigation_payload(payload,mu,cluster)
   for mode in ('stock','existing','merged','missing-file','partial','bad-startup'):
    with tempfile.TemporaryDirectory(prefix='cpmap-v2-fixture-') as tmp:
     root=Path(tmp);dio,lsd,jars=fixture(root,size,mode,nav);before=(digest(dio),digest(lsd))
@@ -29,7 +29,7 @@ def main():
     assert not (jars/'VCMenu.jar').exists() and not (jars/'VCMirrorRate.jar').exists()
     assert (prefs/'settings.state').read_bytes()==b'fixture-preserve-user-state'
    print('V2_INSTALL_REPEAT_RESTORE_PASS',mu,cluster,mode)
-  for target in ('VCMenu.jar','VCMirrorRate.jar','CarPlayNavigationPatch.jar'):
+  for target in ('VCMenu.jar','VCMirrorRate.jar',navigation_name(mu)):
    with tempfile.TemporaryDirectory(prefix='cpmap-v2-rollback-') as tmp:
     root=Path(tmp);dio,lsd,jars=fixture(root,size,'stock',nav);before=(digest(dio),digest(lsd))
     commands=root/'commands';commands.mkdir();mv=commands/'mv'
@@ -38,5 +38,5 @@ def main():
     assert before==(digest(dio),digest(lsd))
     assert not (jars/'VCMenu.jar').exists() and not (jars/'VCMirrorRate.jar').exists()
    print('V2_PARTIAL_COMMIT_ROLLBACK_PASS',mu,cluster,target)
- print('V2_ALL_FIVE_INSTALL_PROFILES_PASS')
+ print('V2_ALL_INSTALL_PROFILES_PASS count='+str(len(PROFILES)))
 if __name__=='__main__':main()

@@ -1,0 +1,6 @@
+native_vc_menu=1
+native_ui_vm_validation=prior_candidate_800x480_English_restart_test
+release_status=2.1.0-g11-beta.1_prerelease
+locales=31
+physical_validation=not_done
+output=1010x376

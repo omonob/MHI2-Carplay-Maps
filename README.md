@@ -1,12 +1,14 @@
 # CarPlay Maps VC for MHI2
 
-Free open-source CarPlay maps and screen mirroring for Volkswagen and Škoda virtual cockpits. Author: [omonob 汽车大玩家](https://github.com/omonob).
+Free open-source CarPlay maps and screen mirroring for Volkswagen, Škoda and SEAT virtual cockpits. Author: [omonob 汽车大玩家](https://github.com/omonob).
 
-大众与斯柯达 MHI2 的免费开源 CarPlay 地图和屏幕镜像项目。开源软件本身及 GPLv3 授予的权利不收费。
+大众、斯柯达与西雅特 MHI2 的免费开源 CarPlay 地图和屏幕镜像项目。开源软件本身及 GPLv3 授予的权利不收费。
 
 [Downloads 下载](https://github.com/omonob/MHI2-Carplay-Maps/releases/latest) · [2.0.1 release notes 中英文更新说明](releases/toolbox-plaintext-v2.0.1.md) · [GPLv3](LICENSE)
 
 [开发进度、图片与帧率／延迟数据](docs/development/2026-10-28/README.md) · [Development report, images and measurements](docs/development/2026-10-28/README_EN.md)
+
+**G11 测试版 / G11 prerelease:** [2.1.0-g11-beta.1 下载 / Download](https://github.com/omonob/MHI2-Carplay-Maps/releases/tag/toolbox-plaintext-v2.1.0-g11-beta.1) · [中英文说明 / Notes](releases/toolbox-plaintext-v2.1.0-g11-beta.1.md)。新增 Škoda MU1433 和 SEAT MU1447，仅 AID 10.5；已通过离线测试，真实手机／仪表尚待验收。MU0033 不支持。稳定版 2.0.1 不变。Only the traditional full MQB package is published; the standalone installer remains a local experiment.
 
 ## 中文说明
 
@@ -30,6 +32,8 @@ App-Connect 设置里增加独立的“虚拟座舱设置”入口，保留原�
 | MU1102 | 55,915,411 bytes | 800×480 | 1010×376 |
 | MU1367 | 55,840,541 bytes | 800×480 | 1010×376 |
 | MU1440 Škoda | 55,840,933 bytes | 不支持 | 1010×376，保留滑轮方向 |
+| MU1433 Škoda G11（测试版） | 52,751,492 bytes | 不支持 | 1010×376，原品牌 800×480 中控 UI |
+| MU1447 SEAT G11（测试版） | 55,712,574 bytes | 不支持 | 1010×376，原品牌 800×480 中控 UI |
 
 AID 10.5 保留已上机黄金基线的左／右／中间卡片安全区，Waze 卡片仍有已知布局问题。2.0.1 另补 iPhone 17 Pro Max 的纯地图居中声明：卡片关闭时，普通状态为 `(202,16,606,344)`，CarPlay 取得导航所有权后为 `(42,16,606,344)`；输出仍是 1010×376。新接入的导航所有权事件通路经过离线测试，尚待手机上机确认；参数不保证适合所有手机。
 
@@ -69,6 +73,8 @@ AID 10.5 has Center, Left, Right and Off card choices and a fixed 1010×376 outp
 
 MU1102 and MU1367 support both cluster profiles. MU1440 Škoda supports AID 10.5 only. Exact firmware sizes are listed above; unknown profiles are rejected before factory files are modified.
 
+The **2.1.0-g11-beta.1 prerelease** adds exact Škoda MU1433 and SEAT MU1447 G11 firmware, AID 10.5 only. Their native menus use their own 800×480 head-unit geometry, while cluster video remains 1010×376. Both are offline-tested, not yet physically accepted with a phone and cluster. MU0033 is excluded. Existing stable 2.0.1 downloads remain unchanged.
+
 The original on-unit AID 10.5 Left, Right and Center card rectangles are retained; Waze still has a known card-layout issue. Version 2.0.1 adds a separate iPhone 17 Pro Max pure-map view when Navigation Card is Off: `(202,16,606,344)` normally and `(42,16,606,344)` when CarPlay owns navigation. Output stays 1010×376. The newly integrated ownership-event path is offline-tested but still needs a phone-connected test; these are not universal phone parameters.
 
 The final AID 12.3 safe area `(220,65,360,348)` is an offline-tested experimental parameter, not a vehicle-validated golden release. Both AID 12.3 native cores are unchanged in 2.0.1. The complete package has not been verified on every vehicle.
@@ -88,6 +94,8 @@ For an unsupported firmware, contact the author about a free adaptation and shar
 ## Build and test
 
 Source is under `src/card-core`, `src/vc-menu`, `src/vc-runtime`, `src/toolbox` and `src/steering-mu1440`. Full OEM firmware, private credentials, device keys and proprietary fonts are not redistributed. Supply your own exact original firmware JARs to compile the minimal UI hooks.
+
+For G11, use `Build-V2Menu.ps1 -Mu1433Jar ... -Mu1447Jar ...`, `Build-G11Navigation.ps1 -Mu1433Jar ...`, and `Build-G11Native.sh`. Use fresh build folders. `Stage-G11Release.py` stages those outputs and creates the full MQB prerelease from the exact unchanged published 2.0.1 archive; it does not create a standalone installer. See its `--help` for required local inputs. Run the fixture regressions and final archive test before publishing.
 
 1. Run `tools/Build-V2Menu.ps1` with `-Mu1102Jar`, `-Mu1367Jar`, `-Mu1440Jar` and a fresh `-BuildRoot`. It compiles against each firmware API and runs host persistence, policy, locale and profile tests.
 2. Run `tools/Build-V2Native.sh` inside a compatible locally built QNX 6.5 ARMv7 GNU toolchain container with this repository mounted at `/src`. It builds five native cores, two fixed-resolution renderers and the shared runtime, and runs the actual declaration/async-transport tests under sanitizers.

@@ -16,7 +16,12 @@ ROOT="$APP/carplaymaps"
 DIO="$APP/eso/bin/apps/dio_manager"
 LSD="$APP/eso/hmi/lsd/lsd.sh"
 JAR="$APP/eso/hmi/lsd/jars/CarPlayClusterControls.jar"
-NAV_JAR="$APP/eso/hmi/lsd/jars/CarPlayNavigationPatch.jar"
+NAV_NAME="CarPlayNavigationPatch.jar"
+if [ -f "$ROOT/rollback/NAV_JAR_NAME" ]; then
+    NAV_NAME=`cat "$ROOT/rollback/NAV_JAR_NAME"` || exit 1
+    case "$NAV_NAME" in CarPlayNavigationPatch.jar|CarPlayMapsG11Navigation.jar) ;; *) echo "CPMAP_RESTORE_FAIL=NAV_BACKUP_METADATA_INVALID"; exit 1 ;; esac
+fi
+NAV_JAR="$APP/eso/hmi/lsd/jars/$NAV_NAME"
 
 [ -s "$ROOT/stock_first/dio_manager.real" ] || { echo "CPMAP_RESTORE_FAIL=STOCK_MISSING"; exit 1; }
 [ -s "$ROOT/rollback/lsd.sh" ] || { echo "CPMAP_RESTORE_FAIL=LSD_BACKUP_MISSING"; exit 1; }
@@ -51,8 +56,8 @@ elif [ -e "$ROOT/rollback/JAR_ABSENT" ]; then
     rm -f "$JAR"
 fi
 
-if [ -s "$ROOT/rollback/CarPlayNavigationPatch.jar" ]; then
-    cp "$ROOT/rollback/CarPlayNavigationPatch.jar" "$NAV_JAR.restore" || exit 1
+if [ -s "$ROOT/rollback/$NAV_NAME" ]; then
+    cp "$ROOT/rollback/$NAV_NAME" "$NAV_JAR.restore" || exit 1
     chmod 644 "$NAV_JAR.restore"
     mv "$NAV_JAR.restore" "$NAV_JAR" || exit 1
 elif [ -e "$ROOT/rollback/NAV_JAR_ABSENT" ]; then
